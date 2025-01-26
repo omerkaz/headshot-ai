@@ -1,4 +1,3 @@
-import NavigationHeaderLeft from '@/components/layouts/NavigationHeaderLeft';
 import NavigationHeaderTitle from '@/components/layouts/NavigationHeaderTitle';
 import useColorScheme from '@/hooks/useColorScheme';
 import { colors } from '@/theme';
@@ -21,7 +20,6 @@ export default function HomeStackLayout() {
         options={{
           title: 'Home',
           headerTitle: () => <NavigationHeaderTitle />,
-          headerLeft: () => <NavigationHeaderLeft onPress={toggleDrawer} />,
           headerTitleAlign: 'center',
         }}
       />

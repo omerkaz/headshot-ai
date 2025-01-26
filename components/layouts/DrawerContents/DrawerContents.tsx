@@ -1,6 +1,6 @@
-import { StyleSheet, SafeAreaView, View, Text } from 'react-native';
 import useColorScheme from '@/hooks/useColorScheme';
 import { colors } from '@/theme';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
   root: {
@@ -16,8 +16,10 @@ export default function DrawerContents() {
   const { isDark } = useColorScheme();
   return (
     <SafeAreaView>
-      <View style={[styles.root, isDark && { backgroundColor: colors.blackGray }]}>
-        <Text style={{ color: isDark ? colors.white : colors.black }}>Side Menu Contents</Text>
+      <View style={[styles.root, isDark && { backgroundColor: colors.common.black }]}>
+        <Text style={{ color: isDark ? colors.common.white : colors.common.black }}>
+          Side Menu Contents
+        </Text>
       </View>
     </SafeAreaView>
   );

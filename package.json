@@ -58,7 +58,8 @@
     "react-native-webview": "13.12.5",
     "react-redux": "^9.2.0",
     "redux-logger": "^3.0.6",
-    "expo-updates": "~0.26.13"
+    "expo-updates": "~0.26.13",
+    "expo-image-picker": "~16.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

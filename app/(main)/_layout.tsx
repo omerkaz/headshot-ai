@@ -1,12 +1,19 @@
-import { Drawer } from 'expo-router/drawer';
-import DrawerContents from '@/components/layouts/DrawerContents';
+import { Stack } from 'expo-router';
+import React from 'react';
 
-export default function DrawerWithTabsLayout() {
+export default function MainLayout() {
   return (
-    <Drawer
-      drawerContent={DrawerContents}
-      screenOptions={{ headerShown: false, drawerType: 'back' }}>
-      <Drawer.Screen name="(tabs)" options={{ title: 'Tabs' }} />
-    </Drawer>
+    <Stack
+      screenOptions={{
+        headerShown: true,
+      }}
+    >
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerShown: false,
+        }}
+      />
+    </Stack>
   );
 }

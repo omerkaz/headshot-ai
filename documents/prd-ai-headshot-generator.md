@@ -1,96 +1,206 @@
 # AI Headshot Generator PRD
 
-## 1. Objective
+## 1. Problem Statement and Goals
 
-Create a mobile app that transforms user-provided selfies into professional headshots using fal.ai's Flux-LoRA Portrait Trainer.
+### Problem Statement
+Users need a convenient mobile solution to create professional-looking headshots without expensive photography sessions. Current solutions are either too expensive, time-consuming, or don't produce consistent professional results.
 
-## 2. Key Features
+### Goals and Objectives
+- Create professional headshots from user-provided selfies using AI
+- Provide a user-friendly mobile experience
+- Ensure high-quality, consistent results
+- Minimize the time and cost for users to get professional headshots
 
-### 2.1 Image Acquisition
+### Success Criteria
+- User satisfaction rate > 85%
+- Average processing time < 5 minutes per session
+- Image quality comparable to professional photography
+- Minimum 10 successful headshot generations per user
 
-- Minimum 10 image upload via device camera or gallery
-- Image validation system:
-  - Face detection (single face per image)
-  - Image quality checks (resolution, lighting)
-  - Diversity requirements (different angles/expressions)
+## 2. User Stories and Requirements
 
-### 2.2 AI Processing Pipeline
+### User Personas
+1. **Professional Job Seekers**
+   - Need: Professional headshots for LinkedIn/resumes
+   - Pain point: Traditional photography is expensive
 
-1. **Model Training**
+2. **Remote Workers**
+   - Need: Professional profile pictures for work platforms
+   - Pain point: Can't visit photography studios easily
 
-   - Secure API integration with fal.ai's `/train` endpoint
-   - Training parameters:
-     ```json
-     {
-       "trainer": "flux-lora-portrait-trainer",
-       "max_steps": 2000,
-       "resolution": 1024
-     }
-     ```
-2. **Weight File Management**
+3. **Social Media Professionals**
+   - Need: Consistent, professional-looking profile images
+   - Pain point: Frequent need for fresh content
 
-   - Secure storage of trained weights
-   - Version control for different training sessions
-   - User-specific weight isolation
-3. **Headshot Generation**
+### Functional Requirements
 
-   - Integration with fal.ai's `/inference` endpoint
-   - Customizable parameters:
-     - Background styles
-     - Professional attire variants
-     - Lighting presets
+#### Image Acquisition
+- Upload minimum 10 images from device gallery/camera
+- Support for both front and rear camera
+- Image quality validation
+- Face detection and validation
+- Progress tracking for uploads
 
-### 2.3 User Interface
+#### AI Processing
+- Integration with fal.ai API
+- Training with flux-lora-portrait-trainer
+- Weight file management
+- Professional headshot generation with custom weights
 
-- Progress tracking for training/generation
-- Result gallery with sharing capabilities
-- Batch management for multiple sessions
+#### User Interface
+- Intuitive image upload process
+- Real-time progress indicators
+- Preview capabilities
+- Basic image editing tools
+- Gallery management
 
-## 3. Technical Requirements
+### Non-Functional Requirements
+- Response time < 2s for image uploads
+- AI processing feedback every 10% of progress
+- Secure storage of user images
+- GDPR compliance
+- Offline capability for uploaded images
 
-### 3.1 Stack
+## 3. Technical Specifications
 
-- React Native (Expo SDK 50+)
-- State Management: Context API + useReducer
-- Navigation: React Navigation 7.x
-- Image Processing: react-native-vision-camera + expo-image-manipulator
+### System Architecture
+- React Native mobile application
+- Expo managed workflow
+- fal.ai API integration
+- Local storage for image caching
+- Cloud storage for weight files
 
-### 3.2 Security
+### API Specifications
+```json
+{
+  "training": {
+    "endpoint": "/train",
+    "parameters": {
+      "trainer": "flux-lora-portrait-trainer",
+      "max_steps": 2000,
+      "resolution": 1024
+    }
+  },
+  "inference": {
+    "endpoint": "/inference",
+    "parameters": {
+      "model": "flux-lora",
+      "weights": "user_specific_weights"
+    }
+  }
+}
+```
 
-- HTTPS for all API calls
-- API key rotation strategy
-- Secure local storage for user credentials
-- GDPR-compliant image handling
+### Data Models
+- User profile
+- Image metadata
+- Training sessions
+- Generated headshots
+- Weight files
 
-### 3.3 Performance
+### Security Requirements
+- Encrypted data transmission
+- Secure image storage
+- API key management
+- User authentication
+- Privacy compliance
 
-- Background processing for AI operations
-- Image compression pipeline (target <1MB/image)
-- Offline queue for failed API requests
+## 4. Design Guidelines
 
-## 4. Milestones
+### UI Components
+- Image upload area
+- Progress indicators
+- Preview gallery
+- Action buttons
+- Status messages
 
-### Phase 1: Core Functionality (4 Weeks)
+### Design System
+- Primary color: #0e6669 (Teal)
+- Secondary color: #cb0c47 (Red)
+- Text color: #f2f1f0 (Off-white)
+- System fonts
+- Consistent padding (16px)
+- Rounded corners (8px)
 
-- [ ] Image upload & validation system
+### Accessibility
+- Clear contrast ratios
+- Screen reader support
+- Touch targets > 44px
+- Loading states
+- Error handling
+
+## 5. Timeline and Milestones
+
+### Phase 1: Core Development (4 weeks)
+- [x] Project setup
+- [ ] Image upload implementation
 - [ ] fal.ai API integration
-- [ ] Basic training/generation UI
+- [ ] Basic UI implementation
 
-### Phase 2: Enhanced UX (3 Weeks)
+### Phase 2: AI Integration (3 weeks)
+- [ ] Training pipeline
+- [ ] Weight file management
+- [ ] Headshot generation
+- [ ] Progress tracking
 
-- [ ] Real-time progress tracking
-- [ ] Result gallery with filters
-- [ ] Batch management system
+### Phase 3: Polish (2 weeks)
+- [ ] UI/UX refinement
+- [ ] Performance optimization
+- [ ] Error handling
+- [ ] Testing and bug fixes
 
-### Phase 3: Optimization (2 Weeks)
+### Phase 4: Launch (1 week)
+- [ ] Final testing
+- [ ] App store submission
+- [ ] Documentation
+- [ ] Marketing materials
 
-- [ ] Performance benchmarking
-- [ ] Security audit
-- [ ] App Store/GPlay deployment
+## 6. Success Metrics
 
-## 5. Success Metrics
+### Performance Metrics
+- Image upload time < 2s
+- Training completion < 10 minutes
+- Generation time < 30s per image
+- App size < 50MB
 
-- <3% training failure rate
-- <2s image processing latency (post-upload)
-- > 85% user retention after first generation
+### Quality Metrics
+- < 3% training failure rate
+- < 1% generation failure rate
+- > 90% face detection accuracy
+- > 85% user satisfaction
+
+### Business Metrics
+- User retention > 85%
+- Average session duration
+- Number of headshots generated
+- User feedback score
+
+## 7. Risk Mitigation
+
+### Technical Risks
+- API availability
+- Processing time variations
+- Image quality issues
+- Storage limitations
+
+### Mitigation Strategies
+- Offline capability
+- Progress caching
+- Quality validation
+- Cloud storage integration
+
+## 8. Future Considerations
+
+### Potential Enhancements
+- Additional AI models
+- Batch processing
+- Style customization
+- Social sharing
+- Professional templates
+
+### Scalability
+- Cloud infrastructure
+- Processing optimization
+- Storage solutions
+- User management
   >
