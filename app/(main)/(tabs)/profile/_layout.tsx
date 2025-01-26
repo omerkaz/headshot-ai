@@ -1,13 +1,10 @@
 import NavigationHeaderTitle from '@/components/layouts/NavigationHeaderTitle';
 import useColorScheme from '@/hooks/useColorScheme';
 import { colors } from '@/theme';
-import { DrawerActions } from '@react-navigation/native';
-import { Stack, useNavigation } from 'expo-router';
+import { Stack } from 'expo-router';
 
 export default function ProfileStackLayout() {
-  const navigation = useNavigation();
   const { isDark } = useColorScheme();
-  const toggleDrawer = () => navigation.dispatch(DrawerActions.toggleDrawer());
   return (
     <Stack
       screenOptions={{
