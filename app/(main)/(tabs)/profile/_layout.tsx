@@ -21,7 +21,6 @@ export default function ProfileStackLayout() {
           headerTitle: () => <NavigationHeaderTitle />,
         }}
       />
-      <Stack.Screen name="details" options={{ title: 'Details' }} />
     </Stack>
   );
 }

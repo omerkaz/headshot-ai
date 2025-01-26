@@ -23,7 +23,6 @@ export default function HomeStackLayout() {
           headerTitleAlign: 'center',
         }}
       />
-      <Stack.Screen name="details" options={{ title: 'Details' }} />
     </Stack>
   );
 }
