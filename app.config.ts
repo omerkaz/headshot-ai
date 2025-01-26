@@ -1,4 +1,4 @@
-import { ExpoConfig, ConfigContext } from 'expo/config';
+import { ConfigContext, ExpoConfig } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   const expoProjectId = process.env.EXPO_PROJECT_ID ?? '18adc0d0-eb1d-11e9-8009-d524ed5cc4a7';
@@ -9,11 +9,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       ...config.ios,
       bundleIdentifier:
-        process.env.EXPO_IOS_BUNDLE_IDENTIFIER ?? 'com.watarumaeda.react-native-boilerplate',
+        process.env.EXPO_IOS_BUNDLE_IDENTIFIER ?? 'omerkaz.headshot',
     },
     android: {
       ...config.android,
-      package: process.env.EXPO_ANDROID_PACKAGE ?? 'com.watarumaeda.react_native_boilerplate',
+      package: process.env.EXPO_ANDROID_PACKAGE ?? 'com.omerkaz.headshot',
     },
     web: {
       ...config.web,
@@ -26,6 +26,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       eas: { projectId: expoProjectId },
       env: process.env.ENV ?? 'development',
       apiUrl: process.env.API_URL ?? 'https://example.com',
+      FAL_API_KEY: process.env.FAL_API_KEY,
       // add more env variables here...
     },
     plugins: [

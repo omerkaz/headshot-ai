@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   uploadArea: {
-    flex: 1,
+    height: 180,
     margin: 16,
     borderWidth: 2,
     borderStyle: 'dashed',
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   previewTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: colors.common.black,
   },
   imageCount: {
     color: colors.text.secondary,
@@ -178,18 +178,18 @@ export default function Home() {
           color={colors.primary.main}
           style={styles.uploadIcon}
         />
-        <Text style={styles.uploadText}>Drag photos here or tap to upload</Text>
+        <Text style={styles.uploadText}>Tap to upload</Text>
         <TouchableOpacity style={styles.selectButton} onPress={pickImages}>
           <Text style={styles.selectButtonText}>Select Photos</Text>
         </TouchableOpacity>
       </View>
 
       {/* Preview Section */}
-      {images.length > 0 && (
+      
         <View style={styles.previewSection}>
           <View style={styles.previewHeader}>
             <Text style={styles.previewTitle}>Preview</Text>
-            <Text style={styles.imageCount}>{images.length}/10 images</Text>
+            <Text style={styles.imageCount}>{images.length} images</Text>
           </View>
           <View style={styles.imageGrid}>
             {images.map((uri, index) => (
@@ -205,14 +205,10 @@ export default function Home() {
             ))}
           </View>
         </View>
-      )}
+      
 
       {/* Action Buttons */}
       <View style={styles.actionButtons}>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="crop" size={20} color={colors.primary.main} />
-          <Text style={styles.actionButtonText}>Crop</Text>
-        </TouchableOpacity>
         <TouchableOpacity 
           style={styles.actionButton}
           onPress={() => setImages([])}
@@ -223,7 +219,7 @@ export default function Home() {
       </View>
 
       {/* Save Button */}
-      <TouchableOpacity style={styles.saveButton}>
+      <TouchableOpacity style={[styles.saveButton, { opacity: images.length < 10 ? 0.5 : 1 }]} disabled={images.length < 10}>
         <Text style={styles.saveButtonText}>Save Images</Text>
       </TouchableOpacity>
     </SafeAreaView>
