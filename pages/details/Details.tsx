@@ -1,8 +1,8 @@
-import { Text, View, StyleSheet } from 'react-native';
 import GradientButton from '@/components/elements/GradientButton';
-import { useRouter, useLocalSearchParams } from 'expo-router';
 import useColorScheme from '@/hooks/useColorScheme';
 import { colors } from '@/theme';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
   root: {
@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.lightGrayPurple,
+    backgroundColor: colors.common.white,
   },
   title: {
     fontSize: 24,
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
   buttonTitle: {
     fontSize: 16,
-    color: colors.white,
+    color: colors.common.white,
     textAlign: 'center',
   },
   button: {
@@ -35,15 +35,15 @@ export default function Details() {
   const { isDark } = useColorScheme();
   const { from } = useLocalSearchParams();
   return (
-    <View style={[styles.root, isDark && { backgroundColor: colors.blackGray }]}>
+    <View style={[styles.root, isDark && { backgroundColor: colors.common.black }]}>
       <Text
-        style={[styles.title, isDark && { color: colors.gray }]}>{`Details (from ${from})`}</Text>
+        style={[styles.title, isDark && { color: colors.text.secondary }]}>{`Details (from ${from})`}</Text>
       <GradientButton
         title="Go back to Home"
-        titleStyle={[styles.buttonTitle, isDark && { color: colors.blackGray }]}
+          titleStyle={[styles.buttonTitle, isDark && { color: colors.common.white }]}
         style={styles.button}
         gradientBackgroundProps={{
-          colors: [colors.purple, colors.pink],
+          colors: [colors.primary.main, colors.secondary.main],
           start: { x: 0, y: 1 },
           end: { x: 0.8, y: 0 },
         }}
