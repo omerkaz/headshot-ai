@@ -6,6 +6,9 @@ export default function ForgetPasswordStackLayout() {
       >
       <Stack.Screen
         name="index"
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack>
   );

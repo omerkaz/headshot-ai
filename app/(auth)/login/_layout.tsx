@@ -6,6 +6,9 @@ export default function LoginStackLayout() {
       >
       <Stack.Screen
         name="index"
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack>
   );

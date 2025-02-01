@@ -6,6 +6,9 @@ export default function RegisterStackLayout() {
       >
       <Stack.Screen
         name="index"
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack>
   );

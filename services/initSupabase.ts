@@ -1,8 +1,15 @@
-    import { createClient } from "@supabase/supabase-js";
+import config from '@/utils/config';
+import { createClient } from '@supabase/supabase-js';
 
-// Better put your these secret keys in .env file
-export const supabase = createClient("supabaseUrl", "supabaseKey", {
-  auth: {
-    detectSessionInUrl: false as any,
-  },
-});
+if (!config.supabase.url || !config.supabase.anonKey) {
+  throw new Error('Supabase URL or key is not set');
+}
+export const supabase = createClient(
+  config.supabase.url,
+  config.supabase.anonKey,
+  {
+    auth: {
+      detectSessionInUrl: false,
+    },
+  }
+);

@@ -1,12 +1,12 @@
-import { fal } from "@fal-ai/client";
-import Constants from 'expo-constants';
+import config from '@/utils/config';
+import { fal } from '@fal-ai/client';
 
 // Add configuration at the top of the file
 fal.config({
-  credentials: Constants.expoConfig?.extra?.FAL_API_KEY,
+  credentials: config.falAi.apiKey,
 });
 
-console.log('FAL Key loaded:', Constants.expoConfig?.extra?.FAL_API_KEY);
+console.log('FAL Key loaded:', config.falAi.apiKey);
 
 export interface HeadshotGeneratorInput {
   images_data_url: string;
@@ -21,6 +21,7 @@ export interface StreamEvent {
   progress?: number;
   partial_result?: any;
 }
+
 
 export const generateHeadshot = async (
   input: HeadshotGeneratorInput,

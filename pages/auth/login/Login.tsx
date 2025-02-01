@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -6,9 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-// import { supabase } from "../../../services/initSupabase";
-// import { AuthStackParamList } from "../../types/navigation";
-import { router } from "expo-router";
 import {
   Button,
   Layout,
@@ -17,29 +15,31 @@ import {
   themeColor,
   useTheme,
 } from "react-native-rapi-ui";
+import { supabase } from "../../../services/initSupabase";
 
 
-// : NativeStackScreenProps<AuthStackParamList, "Login">
 export default function () {
   const { isDarkmode, setTheme } = useTheme();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+
   async function login() {
-    // setLoading(true);
-    // const { data, error } = await supabase.auth.signInWithPassword({
-    //   email: email,
-    //   password: password,
-    // });
-    // if (!error && !data.user) {
-    //   setLoading(false);
-    //   alert("Check your email for the login link!");
-    // }
-    // if (error) {
-    //   setLoading(false);
-    //   alert(error.message);
-    // }
+    setLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+    if (!error && !data.user) {
+      setLoading(false);
+      alert("Check your email for the login link!");
+    }
+    if (error) {
+      setLoading(false);
+      alert(error.message);
+    }
   }
+
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
