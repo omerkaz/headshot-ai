@@ -1,6 +1,1 @@
-import React from 'react';
-import Dashboard from '../../../../pages/dashboard/Dashboard';
-
-export default function DashboardScreen() {
-  return <Dashboard />;
-} 
+export { default } from '@/pages/dashboard/index';
