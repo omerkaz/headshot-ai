@@ -1,6 +1,12 @@
 import { ConfigContext, ExpoConfig } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => {
+  // Log environment variables (safely)
+  console.log('Environment Config:', {
+    SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL ? '**exists**' : '**missing**',
+    SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ? '**exists**' : '**missing**',
+  });
+
   const expoProjectId = process.env.EXPO_PROJECT_ID ?? '18adc0d0-eb1d-11e9-8009-d524ed5cc4a7';
   const expoConfig: ExpoConfig = {
     ...config,

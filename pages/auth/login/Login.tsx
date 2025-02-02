@@ -17,7 +17,6 @@ import {
 } from "react-native-rapi-ui";
 import { supabase } from "../../../services/initSupabase";
 
-
 export default function () {
   const { isDarkmode, setTheme } = useTheme();
   const [email, setEmail] = useState<string>("");
@@ -26,17 +25,52 @@ export default function () {
 
   async function login() {
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-    if (!error && !data.user) {
+    try {
+      console.log('Attempting login with:', { email });
+
+
+      // Attempt login
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      console.log('Login response:', { 
+        success: !error, 
+        data,
+        errorMessage: error?.message 
+      });
+
+      if (error) {
+        setLoading(false);
+        console.log('Login error:', JSON.stringify(error, null, 2));
+        if (error.message === 'Network request failed') {
+          alert('Connection error. Please check your internet and try again.');
+        } else if (error.message.includes('Invalid login credentials')) {
+          alert('Invalid email or password. Please try again.');
+        } else {
+          alert(error.message);
+        }
+        return;
+      }
+
+      if (!data?.user) {
+        setLoading(false);
+        alert("Check your email for the login link!");
+        return;
+      }
+
+      // Success case
       setLoading(false);
-      alert("Check your email for the login link!");
-    }
-    if (error) {
+      router.replace("/(main)/(tabs)/home");
+    } catch (error: any) {
+      console.error('Login error:', error);
       setLoading(false);
-      alert(error.message);
+      if (error.message?.includes('Network request failed') || error.message?.includes('internet connection')) {
+        alert('Connection error. Please check your internet connection and try again.');
+      } else {
+        alert(error.message || 'An error occurred during login');
+      }
     }
   }
 

@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Image,
@@ -14,9 +15,7 @@ import {
   themeColor,
   useTheme,
 } from "react-native-rapi-ui";
-// import { supabase } from "../../../services/initSupabase";
-// import { AuthStackParamList } from "../../types/navigation";
-import { router } from "expo-router";
+import { supabase } from "../../../services/initSupabase";
 
 export default function () {
   const { isDarkmode, setTheme } = useTheme();
@@ -25,19 +24,19 @@ export default function () {
   const [loading, setLoading] = useState<boolean>(false);
 
   async function register() {
-    // setLoading(true);
-    // const { data, error } = await supabase.auth.signUp({
-    //   email: email,
-    //   password: password,
-    // });
-    // if (!error && !data.user) {
-    //   setLoading(false);
-    //   alert("Check your email for the login link!");
-    // }
-    // if (error) {
-    //   setLoading(false);
-    //   alert(error.message);
-    // }
+    setLoading(true);
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+    if (!error && !data.user) {
+      setLoading(false);
+      alert("Check your email for the login link!");
+    }
+    if (error) {
+      setLoading(false);
+      alert(error.message);
+    }
   }
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>

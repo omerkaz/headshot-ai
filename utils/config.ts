@@ -3,7 +3,12 @@ import Constants from 'expo-constants';
 
 // Type-safe config access
 const extra = Constants.expoConfig?.extra;
-console.log('extra', extra);
+console.log('Config Extra:', {
+  SUPABASE_URL: extra?.SUPABASE_URL,
+  SUPABASE_ANON_KEY: extra?.SUPABASE_ANON_KEY ? '**exists**' : '**missing**',
+  FAL_API_KEY: extra?.FAL_API_KEY ? '**exists**' : '**missing**',
+});
+
 if (!extra?.SUPABASE_URL) {
   throw new Error('Missing SUPABASE_URL in environment config');
 }
