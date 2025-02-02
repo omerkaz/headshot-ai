@@ -72,29 +72,41 @@ Users need a convenient mobile solution to create professional-looking headshots
 
 ### System Architecture
 
-- React Native mobile application
-- Expo managed workflow
-- fal.ai API integration
+- React Native mobile application with Expo managed workflow
+- Supabase for authentication and data storage
+- fal.ai API integration for AI processing
+- Expo ImagePicker for image acquisition
 - Local storage for image caching
-- Cloud storage for weight files
+- Cloud storage for processed images
 
 ### API Specifications
 
 ```json
 {
-  "training": {
-    "endpoint": "/train",
-    "parameters": {
-      "trainer": "flux-lora-portrait-trainer",
-      "max_steps": 2000,
-      "resolution": 1024
+  "fal_ai": {
+    "endpoint": "workflows/omerkaz/headshot-generator",
+    "input": {
+      "images_data_url": "string",
+      "trigger_phrase": "string",
+      "steps": "number",
+      "resume_from_checkpoint": "string",
+      "prompt": "string"
+    },
+    "events": {
+      "status": "string",
+      "progress": "number",
+      "partial_result": "object"
     }
   },
-  "inference": {
-    "endpoint": "/inference",
-    "parameters": {
-      "model": "flux-lora",
-      "weights": "user_specific_weights"
+  "supabase": {
+    "auth": {
+      "signUp": "/auth/sign-up",
+      "signIn": "/auth/sign-in",
+      "resetPassword": "/auth/reset-password"
+    },
+    "storage": {
+      "uploadImage": "/storage/upload",
+      "getImage": "/storage/get"
     }
   }
 }
@@ -102,19 +114,64 @@ Users need a convenient mobile solution to create professional-looking headshots
 
 ### Data Models
 
-- User profile
-- Image metadata
-- Training sessions
-- Generated headshots
-- Weight files
+#### User Profile
+```typescript
+interface User {
+  id: string;
+  email: string;
+  created_at: string;
+  last_login: string;
+}
+```
+
+#### Profile Session
+```typescript
+interface Profile {
+  id: string;
+  user_id: string;
+  status: string;
+  created_at: string;
+  images: ImageMetadata[];
+  generated_headshots: GeneratedHeadshot[];
+}
+```
+
+#### Image Metadata
+```typescript
+interface ImageMetadata {
+  id: string;
+  profile_id: string;
+  uri: string;
+  status: string;
+  validation_results: {
+    face_detected: boolean;
+    quality_score: number;
+  };
+}
+```
+
+#### Generated Headshot
+```typescript
+interface GeneratedHeadshot {
+  id: string;
+  profile_id: string;
+  original_image_id: string;
+  uri: string;
+  style: string;
+  created_at: string;
+}
+```
 
 ### Security Requirements
 
-- Encrypted data transmission
-- Secure image storage
-- API key management
-- User authentication
-- Privacy compliance
+- JWT-based authentication using Supabase
+- Secure image storage using Supabase Storage
+- Environment-based API key management for fal.ai
+- Row Level Security (RLS) policies for database access
+- GDPR-compliant data handling
+- Secure file upload validation
+- Rate limiting for API requests
+- Regular security audits and updates
 
 ## 4. Design Guidelines
 
@@ -148,9 +205,10 @@ Users need a convenient mobile solution to create professional-looking headshots
 ### Phase 1: Core Development (4 weeks)
 
 - [X] Project setup
+- [X] Authentication system implementation
+- [X] Basic UI implementation
 - [ ] Image upload implementation
 - [ ] fal.ai API integration
-- [ ] Basic UI implementation
 
 ### Phase 2: AI Integration (3 weeks)
 
@@ -177,42 +235,66 @@ Users need a convenient mobile solution to create professional-looking headshots
 
 ### Performance Metrics
 
-- Image upload time < 2s
-- Training completion < 10 minutes
-- Generation time < 30s per image
+- Image upload time < 2s per image
+- Image validation time < 1s
+- AI processing initialization < 5s
+- Generation time < 45s per image
 - App size < 50MB
+- API response time < 500ms
+- Cold start time < 3s
 
 ### Quality Metrics
 
-- < 3% training failure rate
-- < 1% generation failure rate
-- > 90% face detection accuracy
-  >
-- > 85% user satisfaction
-  >
+- Authentication success rate > 99%
+- Image upload success rate > 95%
+- Face detection accuracy > 90%
+- Generated image quality score > 8/10
+- User satisfaction rating > 85%
+- App crash rate < 0.1%
+- Error recovery rate > 95%
 
 ### Business Metrics
 
-- User retention > 85%
-- Average session duration
-- Number of headshots generated
-- User feedback score
+- User retention > 85% after first generation
+- Average session duration > 5 minutes
+- Completed profile rate > 75%
+- Average images per session > 8
+- User feedback score > 4.5/5
+- Feature adoption rate > 80%
+- Daily active users growth > 10% week-over-week
+
+### Monitoring Metrics
+
+- API endpoint availability > 99.9%
+- Storage usage per user < 100MB
+- Average API latency < 200ms
+- Error rate per endpoint < 1%
+- Authentication token refresh success > 99%
+- Background job completion rate > 98%
+- Cache hit rate > 80%
 
 ## 7. Risk Mitigation
 
 ### Technical Risks
 
-- API availability
+- API availability (fal.ai and Supabase)
 - Processing time variations
 - Image quality issues
 - Storage limitations
+- Network connectivity issues
+- Session management
+- Rate limiting exceeded
 
 ### Mitigation Strategies
 
-- Offline capability
-- Progress caching
-- Quality validation
-- Cloud storage integration
+- Implement offline capability for image upload queue
+- Progress caching with local storage
+- Client-side image quality validation
+- Cloud storage with Supabase
+- Automatic retry mechanism for failed requests
+- Graceful degradation for slow connections
+- Clear error messaging for users
+- Regular monitoring and alerting
 
 ## 8. Future Considerations
 
