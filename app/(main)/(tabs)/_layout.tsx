@@ -21,10 +21,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="home"
+        name="dashboard"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <AntDesign name="home" size={24} color={color} />,
+          title: 'Dashboard',
+          tabBarIcon: ({ color }) => <AntDesign name="appstore-o" size={24} color={color} />,
         }}
       />
       <Tabs.Screen

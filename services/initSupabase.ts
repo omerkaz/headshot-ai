@@ -12,16 +12,29 @@ if (!config.supabase.url || !config.supabase.anonKey) {
   throw new Error('Supabase URL or key is not set');
 }
 
-// Create custom storage implementation
+// Create custom storage implementation with async/await
 const ExpoSecureStorage = {
-  getItem: (key: string) => {
-    return AsyncStorage.getItem(key);
+  getItem: async (key: string) => {
+    try {
+      return await AsyncStorage.getItem(key);
+    } catch (error) {
+      console.error('Storage getItem error:', error);
+      return null;
+    }
   },
-  setItem: (key: string, value: string) => {
-    return AsyncStorage.setItem(key, value);
+  setItem: async (key: string, value: string) => {
+    try {
+      return await AsyncStorage.setItem(key, value);
+    } catch (error) {
+      console.error('Storage setItem error:', error);
+    }
   },
-  removeItem: (key: string) => {
-    return AsyncStorage.removeItem(key);
+  removeItem: async (key: string) => {
+    try {
+      return await AsyncStorage.removeItem(key);
+    } catch (error) {
+      console.error('Storage removeItem error:', error);
+    }
   },
 };
 
@@ -34,6 +47,9 @@ export const supabase = createClient(
       persistSession: true,
       autoRefreshToken: true,
       storage: ExpoSecureStorage,
+      // Add these options to ensure proper session handling
+      flowType: 'pkce',
+      debug: __DEV__,
     },
     db: {
       schema: 'public',
@@ -43,8 +59,13 @@ export const supabase = createClient(
         'X-Client-Info': 'professional-headshot-generator',
       },
     },
-    // Add retry configuration
-
-
   }
 );
+
+// Add this to debug auth state changes
+if (__DEV__) {
+  supabase.auth.onAuthStateChange((event, session) => {
+    console.log('Auth state changed:', event);
+    console.log('Session token:', session?.access_token);
+  });
+}

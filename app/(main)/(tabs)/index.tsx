@@ -1,5 +1,5 @@
 import { Redirect } from 'expo-router';
 
 export default function Layout() {
-  return <Redirect href="(auth)/login" />;
+  return <Redirect href="(main)/(tabs)/dashboard" />;
 }
