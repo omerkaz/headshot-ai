@@ -3,7 +3,7 @@ import { colors } from '@/theme/colors';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 // Type for our profile
 type Profile = {
@@ -91,7 +91,7 @@ const Dashboard = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
       <View style={styles.header}>
         <Text style={styles.title}>AI Headshot Generator</Text>
@@ -124,7 +124,7 @@ const Dashboard = () => {
           )}
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView >
   );
 };
 
