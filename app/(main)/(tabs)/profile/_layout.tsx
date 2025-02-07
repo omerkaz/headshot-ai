@@ -1,6 +1,5 @@
 import NavigationHeaderTitle from '@/components/layouts/NavigationHeaderTitle';
 import useColorScheme from '@/hooks/useColorScheme';
-import { colors } from '@/theme';
 import { Stack } from 'expo-router';
 
 export default function ProfileStackLayout() {
@@ -8,9 +7,7 @@ export default function ProfileStackLayout() {
   return (
     <Stack
       screenOptions={{
-        headerTintColor: colors.common.white,
-        headerStyle: { backgroundColor: isDark ? colors.common.black : colors.primary.main },
-        headerTitleStyle: { fontSize: 18 },
+        headerShown: false,
       }}>
       <Stack.Screen
         name="index"

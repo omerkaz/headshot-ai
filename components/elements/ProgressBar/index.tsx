@@ -30,10 +30,10 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
   };
 
   const getProgressColor = () => {
-    if (imagesCount < 10) return colors.primary.light;
-    if (imagesCount < 20) return colors.primary.main;
-    if (imagesCount < 30) return colors.secondary.main;
-    return colors.secondary.light;
+    if (imagesCount < 10) return colors.status.warning;
+    if (imagesCount < 20) return colors.status.success;
+    if (imagesCount < 30) return colors.status.error;
+    return colors.status.success;
   };
 
   const handleClear = () => {
@@ -53,28 +53,17 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>Image Collection Progress</Text>
-          <View style={styles.minRequirementContainer}>
-            <View style={[
-              styles.minRequirementDot,
-              { backgroundColor: imagesCount >= 10 ? colors.secondary.main : colors.text.disabled }
-            ]} />
-            <Text style={[
-              styles.minRequirementText,
-              { color: imagesCount >= 10 ? colors.secondary.main : colors.text.disabled }
-            ]}>
-              Minimum 10 images required
-            </Text>
-          </View>
+         
+          
           <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
             <Ionicons 
               name="trash-outline" 
               size={16} 
-              color={imagesCount > 0 ? colors.secondary.main : colors.text.disabled} 
+              color={imagesCount > 0 ? colors.status.error : colors.grey[500]} 
             />
             <Text style={[
               styles.clearButtonText,
-              { color: imagesCount > 0 ? colors.secondary.main : colors.text.disabled }
+              { color: imagesCount > 0 ? colors.status.error : colors.grey[500] }
             ]}>
               Clear all
             </Text>
@@ -85,7 +74,15 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
         </Text>
       </View>
       <View style={styles.progressBackground}>
-        <View style={styles.minRequirementLine} />
+        <View style={styles.minRequirementLineContainer}>
+          <LinearGradient
+            colors={[colors.accent3, colors.accent1]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.minRequirementLine}
+          />
+           <Text style={styles.title}>Progress</Text>
+        </View>
         <View style={styles.segmentContainer}>
           {Array.from({ length: 30 }, (_, i) => (
             <View
@@ -109,9 +106,9 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
           ]}
         >
           <LinearGradient
-            colors={[colors.primary.light, colors.primary.main, colors.secondary.main, colors.secondary.light]}
+            colors={[colors.accent1,  colors.accent3, ]}
             start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
+            end={{ x: 2, y: 0 }}
             style={styles.gradient}
           />
         </Animated.View>
@@ -133,8 +130,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 12,
-    backgroundColor: colors.secondary.main + '15',
-    shadowColor: colors.secondary.dark,
+    backgroundColor: colors.accent1 + '15',
+    shadowColor: colors.accent2,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
@@ -151,10 +148,18 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   title: {
+    position: 'absolute',
+    top: 0,
+    left: -90,
+    bottom: 0,
+    zIndex: 2,
+    width: 300,
+    height: '100%',
     fontSize: 16,
-    fontWeight: '600',
-    color: colors.secondary.dark,
-    letterSpacing: 0.5,
+    fontWeight: '400',
+    color: colors.grey[500],
+    letterSpacing: 30,
+    textAlign: 'center',
   },
   count: {
     fontSize: 20,
@@ -164,7 +169,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
   progressBackground: {
-    height: 8,
+    height: 24,
     backgroundColor: '#f0f0f0',
     borderRadius: 4,
     overflow: 'hidden',
@@ -189,7 +194,7 @@ const styles = StyleSheet.create({
   progressMilestone: {
     width: 2,
     height: '80%',
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: colors.grey[500],
   },
   progressBar: {
     height: '100%',
@@ -207,7 +212,7 @@ const styles = StyleSheet.create({
   },
   status: {
     fontSize: 14,
-    color: colors.text.secondary,
+    color: colors.text,
     fontWeight: '500',
   },
   milestoneContainer: {
@@ -216,11 +221,11 @@ const styles = StyleSheet.create({
   },
   milestone: {
     fontSize: 12,
-    color: colors.text.secondary,
+    color: colors.grey[500],
     fontWeight: '500',
   },
   milestoneReached: {
-    color: colors.secondary.main,
+    color: colors.accent3,
     fontWeight: '700',
   },
   clearButton: {
@@ -252,13 +257,16 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.2,
   },
-  minRequirementLine: {
+  minRequirementLineContainer: {
     position: 'absolute',
     left: '33.33%',
     top: 0,
     bottom: 0,
     width: 2,
-    backgroundColor: colors.secondary.main + '40',
     zIndex: 1,
+  },
+  minRequirementLine: {
+    flex: 1,
+    width: '100%',
   },
 }); 

@@ -1,5 +1,6 @@
 import { colors } from '@/theme';
-import { Stack } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { router, Stack } from 'expo-router';
 import React from 'react';
 
 export default function DashboardLayout() {
@@ -7,9 +8,8 @@ export default function DashboardLayout() {
     <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: colors.primary.main,
+          backgroundColor: colors.accent1,
         },
-        headerTintColor: colors.text.primary,
       }}>
       <Stack.Screen
         name="index"
@@ -20,8 +20,24 @@ export default function DashboardLayout() {
       <Stack.Screen
         name="[id]"
         options={{
-          headerTitle: 'Profile Details',
-          headerBackTitle: 'Back',
+          headerTitle: 'Generating Profile Details',
+          headerBackVisible: false,
+          headerTintColor: colors.text,
+          headerLeft: () => (
+            <Stack.Screen
+              options={{
+                headerLeft: () => (
+                  <Ionicons 
+                    name="chevron-back"
+                    size={24}
+                    color={colors.text}
+                    style={{ marginLeft: 16 }}
+                    onPress={() => router.back()}
+                  />
+                ),
+              }}
+            />
+          ),
           presentation: 'card',
         }}
       />

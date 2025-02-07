@@ -3,6 +3,7 @@ import { ImageModal } from '@/components/elements/ImageModal';
 import { ProgressBar } from '@/components/elements/ProgressBar';
 import { colors } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -35,7 +36,7 @@ export default function ProfileDetail() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary.main} />
+        <ActivityIndicator size="large" color={colors.text} />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
@@ -61,7 +62,14 @@ export default function ProfileDetail() {
           style={[styles.addButton, images.length >= 30 && styles.addButtonDisabled]}
           onPress={handleImagePick}
         >
-          <Ionicons name="add" size={32} color={colors.common.white} />
+          <LinearGradient
+            colors={[colors.accent1, colors.accent3]}
+            start={{ x: 1, y: 0 }}
+            end={{ x: 1.8, y: 1 }}
+            style={styles.gradientButton}
+          >
+            <Ionicons name="add" size={32} color={colors.accent2} />
+          </LinearGradient>
         </TouchableOpacity>
       )}
 
@@ -79,25 +87,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.common.white,
+    backgroundColor: colors.background,
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: colors.text.secondary,
+    color: colors.text,
   },
   container: {
     flex: 1,
-    backgroundColor: colors.common.white,
+    backgroundColor: colors.background,
   },
   addButton: {
     position: 'absolute',
-    bottom: 24,
+    bottom: 100,
     right: 24,
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.primary.main,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -108,9 +115,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    overflow: 'hidden',
+  },
+  gradientButton: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   addButtonDisabled: {
-    backgroundColor: colors.text.disabled,
-    shadowOpacity: 0.1,
+    opacity: 0.5,
   },
 });

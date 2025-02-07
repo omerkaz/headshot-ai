@@ -1,15 +1,20 @@
 import { supabase } from '@/services/initSupabase'; // Make sure you have this setup
 import { colors } from '@/theme/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-// Type for our profile
+// Enhanced Profile type
 type Profile = {
   id: string;
   status: string;
   created_at: string;
+  name: string;
+  preview_images?: string[];
+  total_images?: number;
 };
 
 const Dashboard = () => {
@@ -70,11 +75,16 @@ const Dashboard = () => {
   const navigateToProfile = (id: string) => {
     router.push(`/dashboard/${id}`);
   };
+
+  const createNewProfile = () => {
+    router.push('/dashboard/new');
+  };
+
   console.log("profiles", profiles);
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={colors.primary.main} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -93,16 +103,27 @@ const Dashboard = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
-      <View style={styles.header}>
-        <Text style={styles.title}>AI Headshot Generator</Text>
-        <Text style={styles.subtitle}>Your Professional Profiles</Text>
-      </View>
-      
       <ScrollView style={styles.scrollView}>
         <View style={styles.cardsContainer}>
+          {/* Create New Profile Card */}
+          <Pressable
+            style={[styles.card, styles.createCard]}
+            onPress={createNewProfile}
+          >
+            <View style={styles.cardContent}>
+              <View style={styles.createIconContainer}>
+                <Ionicons name="add-circle" size={40} color={colors.text} />
+              </View>
+              <Text style={styles.createCardTitle}>Create New Profile</Text>
+              <Text style={styles.createCardSubtitle}>Start generating headshots</Text>
+            </View>
+          </Pressable>
+
           {profiles.length === 0 ? (
             <View style={styles.emptyState}>
+              <Ionicons name="images-outline" size={48} color={colors.grey[500]} />
               <Text style={styles.emptyStateText}>No profiles yet</Text>
+              <Text style={styles.emptyStateSubtext}>Create your first profile to get started</Text>
             </View>
           ) : (
             profiles.map((profile) => (
@@ -112,41 +133,50 @@ const Dashboard = () => {
                 onPress={() => navigateToProfile(profile.id)}
               >
                 <View style={styles.cardContent}>
+                  <View style={styles.previewContainer}>
+                    {profile.preview_images ? (
+                      profile.preview_images.slice(0, 4).map((uri, index) => (
+                        <Image
+                          key={index}
+                          source={{ uri }}
+                          style={styles.previewImage}
+                        />
+                      ))
+                    ) : (
+                      <View style={styles.noPreviewContainer}>
+                        <Ionicons name="images-outline" size={24} color={colors.grey[500]} />
+                      </View>
+                    )}
+                  </View>
                   <View style={[
-                    styles.statusIndicator,
+                    styles.statusBadge,
                     { backgroundColor: profile.status === 'ready' ? colors.status.success : colors.status.warning }
-                  ]} />
-                  <Text style={styles.cardTitle}>Profile {profile.id.slice(0, 4)}</Text>
-                  <Text style={styles.cardStatus}>{profile.status}</Text>
+                  ]}>
+                    <Text style={styles.statusText}>{profile.status}</Text>
+                  </View>
+                  <Text style={styles.cardTitle}>{profile.name || `Profile ${profile.id.slice(0, 4)}`}</Text>
+                  <Text style={styles.cardDate}>
+                    {format(new Date(profile.created_at), 'MMM d, yyyy')}
+                  </Text>
+                  {profile.total_images && (
+                    <Text style={styles.imageCount}>
+                      {profile.total_images} images
+                    </Text>
+                  )}
                 </View>
               </Pressable>
             ))
           )}
         </View>
       </ScrollView>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.common.white,
-  },
-  header: {
-    padding: 16,
-    backgroundColor: colors.primary.main,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.text.primary,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: colors.text.primary,
-    opacity: 0.8,
-    marginTop: 4,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
@@ -167,6 +197,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    overflow: 'hidden',
   },
   cardContent: {
     padding: 16,
@@ -183,12 +214,12 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.primary.main,
+    color: colors.text,
     marginTop: 8,
   },
   cardStatus: {
     fontSize: 14,
-    color: colors.text.secondary,
+    color: colors.text,
     marginTop: 4,
   },
   centerContent: {
@@ -202,7 +233,7 @@ const styles = StyleSheet.create({
   },
   retryButton: {
     padding: 12,
-    backgroundColor: colors.primary.main,
+    backgroundColor: colors.accent1,
     borderRadius: 8,
   },
   retryText: {
@@ -218,7 +249,78 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    color: colors.text.secondary,
+    color: colors.grey[500],
+  },
+  createCard: {
+    width: '100%',
+    marginBottom: 24,
+    borderStyle: 'dashed',
+    borderWidth: 2,
+    borderColor: colors.accent2,
+    backgroundColor: colors.accent1,
+  },
+  createIconContainer: {
+    padding: 16,
+    borderRadius: 50,
+    backgroundColor: colors.common.white,
+    marginBottom: 12,
+  },
+  createCardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: 4,
+  },
+  createCardSubtitle: {
+    fontSize: 14,
+    color: colors.grey[500],
+  },
+  previewContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+    marginBottom: 12,
+    justifyContent: 'center',
+  },
+  previewImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+  },
+  noPreviewContainer: {
+    width: '100%',
+    height: 120,
+    backgroundColor: colors.accent1,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  statusText: {
+    color: colors.common.white,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  cardDate: {
+    fontSize: 12,
+    color: colors.grey[500],
+    marginTop: 4,
+  },
+  imageCount: {
+    fontSize: 12,
+    color: colors.grey[500],
+    marginTop: 4,
+    fontWeight: '500',
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: colors.grey[500],
+    marginTop: 8,
   },
 });
 

@@ -1,3 +1,4 @@
+import { colors } from '@/theme';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     margin: 4,
     borderRadius: 8,
     overflow: 'hidden',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.accent1,
   },
   largeImage: {
     width: '48%',
