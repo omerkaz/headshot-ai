@@ -34,7 +34,6 @@
     "@reduxjs/toolkit": "^2.5.0",
     "@supabase/supabase-js": "^2.48.1",
     "@tanstack/react-query": "^5.66.0",
-    "@tanstack/react-query-devtools": "^5.66.0",
     "date-fns": "^4.1.0",
     "expo": "~52.0.26",
     "expo-asset": "~11.0.1",
@@ -70,6 +69,7 @@
     "redux-logger": "^3.0.6"
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "^5.66.0",
     "@babel/core": "^7.25.2",
     "@dotenvx/dotenvx": "^1.33.0",
     "@testing-library/react-native": "^13.0.1",

@@ -18,6 +18,7 @@ export default function ProfileDetail() {
   console.log('images', images);
   console.log('selectedImage', selectedImage);
   console.log('modalVisible', modalVisible);
+
   const handleImagePick = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -39,6 +40,20 @@ export default function ProfileDetail() {
     }
   };
 
+  const handleImageSelect = (uri: string) => {
+    setSelectedImage(uri);
+    setModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setSelectedImage(null);
+  };
+
+  const handleImageRemove = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
@@ -47,8 +62,8 @@ export default function ProfileDetail() {
 
       <ImageGrid
         images={images}
-        onImageSelect={() => setModalVisible(true)}
-        onImageRemove={() => {}}
+        onImageSelect={handleImageSelect}
+        onImageRemove={handleImageRemove}
       />
 
       {images.length < 30 && (
@@ -65,11 +80,7 @@ export default function ProfileDetail() {
         </TouchableOpacity>
       )}
 
-      <ImageModal
-        visible={modalVisible}
-        imageUri={selectedImage}
-        onClose={() => setModalVisible(false)}
-      />
+      <ImageModal visible={modalVisible} imageUri={selectedImage} onClose={handleModalClose} />
     </SafeAreaView>
   );
 }
