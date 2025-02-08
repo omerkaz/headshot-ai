@@ -3,55 +3,52 @@ import { ImageModal } from '@/components/elements/ImageModal';
 import { ProgressBar } from '@/components/elements/ProgressBar';
 import { colors } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import {
-  ActivityIndicator,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-
-import { useProfileImages } from '@/hooks';
+import React, { useState } from 'react';
+import { Alert, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function ProfileDetail() {
-  const { id } = useLocalSearchParams();
-  const {
-    images,
-    profileLoading,
-    selectedImage,
-    modalVisible,
-    handleImagePick,
-    handleImageRemove,
-    handleImageSelect,
-    handleModalClose,
-    handleClearImages,
-    handleSave,
-  } = useProfileImages(id as string);
+  const [images, setImages] = useState<string[]>([]);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  if (profileLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.text} />
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
-  }
+  console.log('images', images);
+  console.log('selectedImage', selectedImage);
+  console.log('modalVisible', modalVisible);
+  const handleImagePick = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: true,
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        const newImages = result.assets.map(asset => asset.uri);
+        setImages(prev => {
+          const updatedImages = [...prev, ...newImages];
+          return updatedImages.slice(0, 30);
+        });
+      }
+    } catch (error) {
+      console.error('Error picking images:', error);
+      Alert.alert('Error', 'Failed to pick images');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
 
-      <ProgressBar imagesCount={images.length} onClearImages={handleClearImages} />
+      <ProgressBar imagesCount={images.length} onClearImages={() => setImages([])} />
 
       <ImageGrid
         images={images}
-        onImageSelect={handleImageSelect}
-        onImageRemove={handleImageRemove}
+        onImageSelect={() => setModalVisible(true)}
+        onImageRemove={() => {}}
       />
 
       {images.length < 30 && (
@@ -68,7 +65,11 @@ export default function ProfileDetail() {
         </TouchableOpacity>
       )}
 
-      <ImageModal visible={modalVisible} imageUri={selectedImage} onClose={handleModalClose} />
+      <ImageModal
+        visible={modalVisible}
+        imageUri={selectedImage}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }

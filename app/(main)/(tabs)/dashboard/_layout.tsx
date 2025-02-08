@@ -27,7 +27,31 @@ export default function DashboardLayout() {
             <Stack.Screen
               options={{
                 headerLeft: () => (
-                  <Ionicons 
+                  <Ionicons
+                    name="chevron-back"
+                    size={24}
+                    color={colors.text}
+                    style={{ marginLeft: 16 }}
+                    onPress={() => router.back()}
+                  />
+                ),
+              }}
+            />
+          ),
+          presentation: 'card',
+        }}
+      />
+      <Stack.Screen
+        name="newHeadshotProfile"
+        options={{
+          headerTitle: 'New Headshot Profile',
+          headerBackVisible: false,
+          headerTintColor: colors.text,
+          headerLeft: () => (
+            <Stack.Screen
+              options={{
+                headerLeft: () => (
+                  <Ionicons
                     name="chevron-back"
                     size={24}
                     color={colors.text}
@@ -43,4 +67,4 @@ export default function DashboardLayout() {
       />
     </Stack>
   );
-} 
+}

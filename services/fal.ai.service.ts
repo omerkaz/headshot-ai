@@ -22,13 +22,12 @@ export interface StreamEvent {
   partial_result?: any;
 }
 
-
 export const generateHeadshot = async (
   input: HeadshotGeneratorInput,
   onProgress?: (event: StreamEvent) => void
 ) => {
   try {
-    const stream = await fal.stream("workflows/omerkaz/headshot-generator", {
+    const stream = await fal.stream('workflows/omerkaz/headshot-generator', {
       input,
     });
 
@@ -39,7 +38,7 @@ export const generateHeadshot = async (
     const result = await stream.done();
     return result;
   } catch (error) {
-    console.error("Error generating headshot:", error);
+    console.error('Error generating headshot:', error);
     throw error;
   }
 };

@@ -1,11 +1,12 @@
+import { useProfile } from '@/hooks/useProfiles';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert } from 'react-native';
 
 export interface UseProfileImagesReturn {
   images: string[];
-  isLoading: boolean;
+  profileLoading: boolean;
   selectedImage: string | null;
   modalVisible: boolean;
   handleImagePick: () => Promise<void>;
@@ -22,25 +23,28 @@ export function useProfileImages(profileId: string): UseProfileImagesReturn {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    loadProfile();
-  }, [profileId]);
+  // useEffect(() => {
+  //   loadProfile();
+  // }, [profileId]);
 
-  const loadProfile = async () => {
-    try {
-      setIsLoading(true);
-      // Here you would typically fetch profile data
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error loading profile:', error);
-      Alert.alert(
-        'Error',
-        'Failed to load profile data',
-        [{ text: 'OK', onPress: () => router.back() }]
-      );
-    }
-  };
+  const { data: profile, isLoading: profileLoading } = useProfile(profileId);
+  console.log('profile', profile);
+
+  // const loadProfile = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     // Here you would typically fetch profile data
+  //     await new Promise(resolve => setTimeout(resolve, 1000));
+  //     setIsLoading(false);
+  //   } catch (error) {
+  //     console.error('Error loading profile:', error);
+  //     Alert.alert(
+  //       'Error',
+  //       'Failed to load profile data',
+  //       [{ text: 'OK', onPress: () => router.back() }]
+  //     );
+  //   }
+  // };
 
   const handleImagePick = async () => {
     try {
@@ -86,11 +90,9 @@ export function useProfileImages(profileId: string): UseProfileImagesReturn {
       setIsLoading(true);
       // Here you would typically upload images to your backend
       await new Promise(resolve => setTimeout(resolve, 2000));
-      Alert.alert(
-        'Success',
-        'Images saved successfully',
-        [{ text: 'OK', onPress: () => router.back() }]
-      );
+      Alert.alert('Success', 'Images saved successfully', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
     } catch (error) {
       console.error('Error saving images:', error);
       Alert.alert('Error', 'Failed to save images');
@@ -101,7 +103,7 @@ export function useProfileImages(profileId: string): UseProfileImagesReturn {
 
   return {
     images,
-    isLoading,
+    profileLoading,
     selectedImage,
     modalVisible,
     handleImagePick,
@@ -111,4 +113,4 @@ export function useProfileImages(profileId: string): UseProfileImagesReturn {
     handleClearImages,
     handleSave,
   };
-} 
+}

@@ -5,7 +5,7 @@ import 'react-native-url-polyfill/auto';
 
 console.log('Supabase Config:', {
   url: config.supabase.url,
-  anonKey: config.supabase.anonKey
+  anonKey: config.supabase.anonKey,
 });
 
 if (!config.supabase.url || !config.supabase.anonKey) {
@@ -38,29 +38,25 @@ const ExpoSecureStorage = {
   },
 };
 
-export const supabase = createClient(
-  config.supabase.url,
-  config.supabase.anonKey,
-  {
-    auth: {
-      detectSessionInUrl: false,
-      persistSession: true,
-      autoRefreshToken: true,
-      storage: ExpoSecureStorage,
-      // Add these options to ensure proper session handling
-      flowType: 'pkce',
-      debug: __DEV__,
+export const supabase = createClient(config.supabase.url, config.supabase.anonKey, {
+  auth: {
+    detectSessionInUrl: false,
+    persistSession: true,
+    autoRefreshToken: true,
+    storage: ExpoSecureStorage,
+    // Add these options to ensure proper session handling
+    flowType: 'pkce',
+    debug: __DEV__,
+  },
+  db: {
+    schema: 'public',
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'professional-headshot-generator',
     },
-    db: {
-      schema: 'public',
-    },
-    global: {
-      headers: {
-        'X-Client-Info': 'professional-headshot-generator',
-      },
-    },
-  }
-);
+  },
+});
 
 // Add this to debug auth state changes
 if (__DEV__) {

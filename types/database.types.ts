@@ -46,4 +46,4 @@ export interface Database {
       profile_status: ProfileStatus;
     };
   };
-} 
+}

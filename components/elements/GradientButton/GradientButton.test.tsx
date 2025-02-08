@@ -12,7 +12,7 @@ describe('<GradientButton />', () => {
           start: { x: 0, y: 1 },
           end: { x: 0.8, y: 0 },
         }}
-      />,
+      />
     );
     const button = screen.getByText(/Click Me/i);
     expect(button).not.toBeNull();

@@ -25,19 +25,11 @@ const TabIcon: React.FC<TabIconProps> = ({ name, color, size, focused }) => {
       <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
         <MaskedView
           style={{ width: size, height: size }}
-          maskElement={
-            <Ionicons 
-              name={name} 
-              size={size}
-              color="black"
-            />
-          }
-        >
+          maskElement={<Ionicons name={name} size={size} color="black" />}>
           <LinearGradient
-             colors={[colors.accent1, colors.accent3]}
-             start={{ x: 1, y: 0 }}
-             end={{ x: 2.2, y: 1 }}
-
+            colors={[colors.accent1, colors.accent3]}
+            start={{ x: 1, y: 0 }}
+            end={{ x: 2.2, y: 1 }}
             style={{ flex: 1 }}
           />
         </MaskedView>
@@ -47,11 +39,7 @@ const TabIcon: React.FC<TabIconProps> = ({ name, color, size, focused }) => {
 
   return (
     <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
-      <Ionicons 
-        name={name} 
-        size={size} 
-        color={color}
-      />
+      <Ionicons name={name} size={size} color={color} />
     </View>
   );
 };
@@ -81,7 +69,7 @@ export default function TabLayout() {
           title: 'Dashboard',
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              name={focused ? "grid" : "grid-outline"}
+              name={focused ? 'grid' : 'grid-outline'}
               size={32}
               color={color}
               focused={focused}
@@ -95,8 +83,8 @@ export default function TabLayout() {
           title: 'Profile',
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
-              name={focused ? "person" : "person-outline"}
-                size={32}
+              name={focused ? 'person' : 'person-outline'}
+              size={32}
               color={color}
               focused={focused}
             />
@@ -116,7 +104,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 15,
     backgroundColor: colors.background,
-    shadowColor: "red",
+    shadowColor: 'red',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -136,7 +124,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   iconContainerFocused: {
-    transform: [{translateY: -4}],
+    transform: [{ translateY: -4 }],
   },
   tabLabel: {
     color: colors.text,

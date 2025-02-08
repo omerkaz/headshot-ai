@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-import type { HeadshotGeneratorInput, StreamEvent } from "../services/fal.ai.service";
-import { generateHeadshot } from "../services/fal.ai.service";
+import { useMutation } from '@tanstack/react-query';
+import type { HeadshotGeneratorInput, StreamEvent } from '../services/fal.ai.service';
+import { generateHeadshot } from '../services/fal.ai.service';
 
 interface GenerateParams {
   input: HeadshotGeneratorInput;
@@ -9,7 +9,6 @@ interface GenerateParams {
 
 export const useHeadshotGenerator = () => {
   return useMutation({
-    mutationFn: ({ input, onProgress }: GenerateParams) => 
-      generateHeadshot(input, onProgress),
+    mutationFn: ({ input, onProgress }: GenerateParams) => generateHeadshot(input, onProgress),
   });
-}; 
+};

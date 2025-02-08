@@ -28,10 +28,12 @@ Users need a convenient mobile solution to create professional-looking headshots
 
    - Need: Professional headshots for LinkedIn/resumes
    - Pain point: Traditional photography is expensive
+
 2. **Remote Workers**
 
    - Need: Professional profile pictures for work platforms
    - Pain point: Can't visit photography studios easily
+
 3. **Social Media Professionals**
 
    - Need: Consistent, professional-looking profile images
@@ -115,6 +117,7 @@ Users need a convenient mobile solution to create professional-looking headshots
 ### Data Models
 
 #### User Profile
+
 ```typescript
 interface User {
   id: string;
@@ -125,6 +128,7 @@ interface User {
 ```
 
 #### Profile Session
+
 ```typescript
 interface Profile {
   id: string;
@@ -137,6 +141,7 @@ interface Profile {
 ```
 
 #### Image Metadata
+
 ```typescript
 interface ImageMetadata {
   id: string;
@@ -151,6 +156,7 @@ interface ImageMetadata {
 ```
 
 #### Generated Headshot
+
 ```typescript
 interface GeneratedHeadshot {
   id: string;
@@ -204,9 +210,9 @@ interface GeneratedHeadshot {
 
 ### Phase 1: Core Development (4 weeks)
 
-- [X] Project setup
-- [X] Authentication system implementation
-- [X] Basic UI implementation
+- [x] Project setup
+- [x] Authentication system implementation
+- [x] Basic UI implementation
 - [ ] Image upload implementation
 - [ ] fal.ai API integration
 

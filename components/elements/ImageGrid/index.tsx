@@ -23,8 +23,7 @@ export function ImageGrid({ images, onImageSelect, onImageRemove }: ImageGridPro
               index % 4 === 3 && styles.mediumImage,
             ]}
             onPress={() => onImageSelect(uri)}
-            onLongPress={() => onImageRemove(index)}
-          >
+            onLongPress={() => onImageRemove(index)}>
             <Image source={{ uri }} style={styles.image} />
           </TouchableOpacity>
         ))}
@@ -64,4 +63,4 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-}); 
+});

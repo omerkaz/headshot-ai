@@ -16,13 +16,13 @@ export const colors = {
   common: {
     black: '#000000',
     white: '#ffffff',
-    transparent: 'transparent'
+    transparent: 'transparent',
   },
   // Status colors
   status: {
-    error: '#ff3d69',     // Existing pink as error
-    success: '#0e6669',   // Reuse primary color
-    warning: '#ffb74d'    // New warning color
+    error: '#ff3d69', // Existing pink as error
+    success: '#0e6669', // Reuse primary color
+    warning: '#ffb74d', // New warning color
   },
   grey: {
     50: '#fafafa',

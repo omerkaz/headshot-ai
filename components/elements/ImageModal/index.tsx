@@ -9,24 +9,9 @@ interface ImageModalProps {
 
 export function ImageModal({ visible, imageUri, onClose }: ImageModalProps) {
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <TouchableOpacity
-        style={styles.container}
-        activeOpacity={1}
-        onPress={onClose}
-      >
-        {imageUri && (
-          <Image
-            source={{ uri: imageUri }}
-            style={styles.image}
-            resizeMode="contain"
-          />
-        )}
+    <Modal animationType="fade" transparent={true} visible={visible} onRequestClose={onClose}>
+      <TouchableOpacity style={styles.container} activeOpacity={1} onPress={onClose}>
+        {imageUri && <Image source={{ uri: imageUri }} style={styles.image} resizeMode="contain" />}
       </TouchableOpacity>
     </Modal>
   );
@@ -43,4 +28,4 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height * 0.8,
   },
-}); 
+});

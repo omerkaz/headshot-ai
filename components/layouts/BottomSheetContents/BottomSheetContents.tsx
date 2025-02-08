@@ -70,22 +70,35 @@ type WelcomeBottomSheetContentsProps = {
 export default function BottomSheetContents({ onClose }: WelcomeBottomSheetContentsProps) {
   const { isDark } = useColorScheme();
   return (
-      <View style={[styles.root, isDark && { backgroundColor: colors.common.black }]}>
-      <Text style={[styles.title, isDark && { color: colors.text.secondary }]}>🎉 Congratulations! </Text>
-      <Text style={[styles.subtitle, { marginBottom: 32 }, isDark && { color: colors.text.secondary }]}>
+    <View style={[styles.root, isDark && { backgroundColor: colors.common.black }]}>
+      <Text style={[styles.title, isDark && { color: colors.text.secondary }]}>
+        🎉 Congratulations!{' '}
+      </Text>
+      <Text
+        style={[styles.subtitle, { marginBottom: 32 }, isDark && { color: colors.text.secondary }]}>
         You have successfully spin up the React Native Boilerplate project in the
         <Text style={{ fontFamily: fonts.openSan.bold }}>{` ${config.env} `}</Text>environment 🚀
       </Text>
-      <Text style={[styles.subtitle, { marginBottom: 8 }, isDark && { color: colors.text.secondary }]}>
+      <Text
+        style={[styles.subtitle, { marginBottom: 8 }, isDark && { color: colors.text.secondary }]}>
         Injected Environmental Variables:
       </Text>
       {Object.entries(config).map(([key, value]) => (
         <View key={key} style={styles.envContainer}>
-          <Text style={[styles.envTitle, isDark && { color: colors.text.secondary }]}>{`✅ ${key}: `}</Text>
+          <Text
+            style={[
+              styles.envTitle,
+              isDark && { color: colors.text.secondary },
+            ]}>{`✅ ${key}: `}</Text>
           <Text style={[styles.envValue, isDark && { color: colors.text.secondary }]}>{value}</Text>
         </View>
       ))}
-      <Text style={[styles.subtitle, { marginVertical: 32 }, isDark && { color: colors.text.secondary }]}>
+      <Text
+        style={[
+          styles.subtitle,
+          { marginVertical: 32 },
+          isDark && { color: colors.text.secondary },
+        ]}>
         {`Your foundational setup is now complete, paving the way for seamless development and innovation. \n\nHappy coding!`}
       </Text>
       <GradientButton

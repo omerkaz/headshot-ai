@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default   function NavigationHeaderTitle() {
+export default function NavigationHeaderTitle() {
   const route = useRoute();
   return (
     <View style={styles.header}>

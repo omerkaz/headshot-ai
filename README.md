@@ -66,20 +66,24 @@ Root (Drawer)
 ####
 
 ### State Management with Redux Toolkit
+
 ---
 
-This project uses [**Redux Toolkit**](https://redux-toolkit.js.org/) for global state management, pre-configured with Redux Hooks for immediate use. 
+This project uses [**Redux Toolkit**](https://redux-toolkit.js.org/) for global state management, pre-configured with Redux Hooks for immediate use.
 
 #### Getting Started
+
 1. Explore existing slices in the [`/slices`](https://github.com/wataru-maeda/react-native-boilerplate/tree/main/slices) directory
 2. See usage examples in [`/app/_layout.tsx`](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/app/_layout.tsx#L23)
 
 #### Adding New State
+
 1. Copy [`/slices/app.slice.ts`](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/slices/app.slice.ts)
 2. Rename and modify for your needs
 3. Add your slice to [`/utils/store.ts`](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/utils/store.ts#L10)
 
 #### Development
+
 Redux logger is enabled by default. To disable, remove the logger from [`/utils/store.ts`](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/utils/store.ts#L13).
 
 </details>
@@ -99,41 +103,50 @@ The project simplifies asset and theme management through a centralized [`/theme
 ####
 
 ### Environment Variables Management
+
 ---
 
 The project uses [`dotenvx`](https://dotenvx.com/) to handle environment variables across both Expo CLI and EAS CLI builds. Here's how it works:
 
 #### Setup Structure
+
 - `.env.dev.example` - Development environment template
 - `.env.prod.example` - Production environment template
 - Configuration in [`app.config.ts`](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/app.config.ts) and [`utils/config.ts`](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/utils/config.ts)
 
 #### Getting Started with Your Expo Account
+
 1. Rename `.env.dev.example` to `.env.dev`
 2. Update `owner` in [`app.json`](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/app.json#L6) with your Expo username
 3. Set your `EXPO_SLUG` and `EXPO_PROJECT_ID` in `.env.dev`
 
 #### Adding New Environment Variables
+
 1. Add variables to both `.env.dev` and `.env.prod`
 2. Include them in `app.config.ts` under the [`extra`](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/app.config.ts#L29) object
 3. Define them in [`utils/config.ts`](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/utils/config.ts#L6)
 
 #### Verify Configuration
+
 - Check variables in the app's bottom sheet OR...
 - Run `npm run dev:config:public` to view loaded variables in console
 
 ### Environment Variables & Security
+
 ---
 
 The project intentionally avoids using `EXPO_PUBLIC_` prefix for environment variables, instead utilizing EAS secrets for enhanced security. Here's why:
 
 #### Current Approach
+
 - Variables are uploaded to EAS servers as `secrets`
 - Securely accessible only during EAS build and submit processes
 - Use `npm run dev:secret:push` to automatically upload variables from `.env.dev` and `.env.prod`
 
 #### Alternative Approach
+
 If you prefer direct access via `process.env`:
+
 - Use `EXPO_PUBLIC_` prefix for non-sensitive data
 - **Warning**: Never store sensitive information with `EXPO_PUBLIC_` prefix as it exposes data to clients
 - For sensitive data handling, follow [React Native's security guidelines](https://reactnative.dev/docs/security#storing-sensitive-info) for storing sensitive information
@@ -155,17 +168,20 @@ The project streamlines deployment with simple commands - use `npm run dev:build
 ####
 
 #### Development:
+
 - `npm run dev` - Run on all platforms
 - `npm run dev:ios` - Run iOS only
 - `npm run dev:android` - Run Android only
 - `npm run dev:web` - Run web only
 
 #### Building:
+
 - `npm run dev:build:mobile` - Build mobile apps
 - `npm run dev:build:web` - Build web app
 - `npm run dev:deploy:web` - Deploy web app to [EAS Hosting](https://docs.expo.dev/eas/hosting/introduction/)
 
 #### Testing:
+
 - `npm run lint` - Run ESLint
 - `npm run format` - Run Prettier
 - `npm run test` - Run Jest tests
@@ -187,16 +203,18 @@ The project maintains code quality through integrated Eslint, Prettier, and Jest
 ####
 
 - When you've completed your work and need to share a preview with the QA team, our boilerplate automates the distribution process for you. Here's how it works:
+
 1. Whenever you create a pull request (PR) or merge, it automatically generates a preview channel in your Expo account.
 2. You don't need to run 'eas' commands every time you create a PR; the process is streamlined for you.
 3. The continuous delivery (CD) process is managed through the [preview.yml](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/.github/workflows/preview.yml) configuration file, which utilizes [expo-github-action](https://github.com/expo/expo-github-action).
 
 To set up the CD workflow, follow these steps:
+
 1. Create an `EXPO_TOKEN` in your Expo account. You can do this by visiting [this link](https://expo.dev/accounts/%5Baccount%5D/settings/access-tokens).
 2. In your GitHub repository, go to **Settings**, then navigate to **Secrets and variables** -> **Actions** -> **Add new repository secret**. Make sure to name the secret as `EXPO_TOKEN`.
 3. Update `name`, `slug`, `owner`, `projectId` and `url` in [app.json](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/app.json):
 4. Update in `name`, `slug`, `projectId`, `ios`, `android` in [app.config.ts](https://github.com/wataru-maeda/react-native-boilerplate/blob/main/app.config.ts)
-6. After you push changes to the main branch, a new preview will be created automatically.
+5. After you push changes to the main branch, a new preview will be created automatically.
 
 </details>
 

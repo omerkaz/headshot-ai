@@ -38,14 +38,10 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
 
   const handleClear = () => {
     if (imagesCount > 0) {
-      Alert.alert(
-        'Clear Images',
-        'Are you sure you want to clear all images?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Clear', style: 'destructive', onPress: onClearImages },
-        ],
-      );
+      Alert.alert('Clear Images', 'Are you sure you want to clear all images?', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Clear', style: 'destructive', onPress: onClearImages },
+      ]);
     }
   };
 
@@ -53,25 +49,22 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
-         
-          
           <TouchableOpacity style={styles.clearButton} onPress={handleClear}>
-            <Ionicons 
-              name="trash-outline" 
-              size={16} 
-              color={imagesCount > 0 ? colors.status.error : colors.grey[500]} 
+            <Ionicons
+              name="trash-outline"
+              size={16}
+              color={imagesCount > 0 ? colors.status.error : colors.grey[500]}
             />
-            <Text style={[
-              styles.clearButtonText,
-              { color: imagesCount > 0 ? colors.status.error : colors.grey[500] }
-            ]}>
+            <Text
+              style={[
+                styles.clearButtonText,
+                { color: imagesCount > 0 ? colors.status.error : colors.grey[500] },
+              ]}>
               Clear all
             </Text>
           </TouchableOpacity>
         </View>
-        <Text style={[styles.count, { color: getProgressColor() }]}>
-          {imagesCount}/30
-        </Text>
+        <Text style={[styles.count, { color: getProgressColor() }]}>{imagesCount}/30</Text>
       </View>
       <View style={styles.progressBackground}>
         <View style={styles.minRequirementLineContainer}>
@@ -81,16 +74,13 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
             end={{ x: 0, y: 1 }}
             style={styles.minRequirementLine}
           />
-           <Text style={styles.title}>Progress</Text>
+          <Text style={styles.title}>Progress</Text>
         </View>
         <View style={styles.segmentContainer}>
           {Array.from({ length: 30 }, (_, i) => (
             <View
               key={i}
-              style={[
-                styles.progressSegment,
-                i % 10 === 0 && styles.progressMilestone,
-              ]}
+              style={[styles.progressSegment, i % 10 === 0 && styles.progressMilestone]}
             />
           ))}
         </View>
@@ -103,10 +93,9 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
                 outputRange: ['0%', '100%'],
               }),
             },
-          ]}
-        >
+          ]}>
           <LinearGradient
-            colors={[colors.accent1,  colors.accent3, ]}
+            colors={[colors.accent1, colors.accent3]}
             start={{ x: 0, y: 0 }}
             end={{ x: 2, y: 0 }}
             style={styles.gradient}
@@ -269,4 +258,4 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-}); 
+});

@@ -5,7 +5,16 @@ import { format } from 'date-fns';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 // Enhanced Profile type
 type Profile = {
@@ -26,9 +35,11 @@ const Dashboard = () => {
   useEffect(() => {
     // Check auth state when component mounts
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);
-      
+
       if (session) {
         console.log('User is authenticated with token:', session.access_token);
         fetchProfiles();
@@ -42,7 +53,9 @@ const Dashboard = () => {
     checkAuth();
 
     // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
       if (session) {
         fetchProfiles();
@@ -57,7 +70,7 @@ const Dashboard = () => {
   const fetchProfiles = async () => {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('headshot_profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -77,10 +90,10 @@ const Dashboard = () => {
   };
 
   const createNewProfile = () => {
-    router.push('/dashboard/new');
+    router.push('/dashboard/newHeadshotProfile');
   };
 
-  console.log("profiles", profiles);
+  console.log('profiles', profiles);
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -106,10 +119,7 @@ const Dashboard = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.cardsContainer}>
           {/* Create New Profile Card */}
-          <Pressable
-            style={[styles.card, styles.createCard]}
-            onPress={createNewProfile}
-          >
+          <Pressable style={[styles.card, styles.createCard]} onPress={createNewProfile}>
             <View style={styles.cardContent}>
               <View style={styles.createIconContainer}>
                 <Ionicons name="add-circle" size={40} color={colors.text} />
@@ -126,42 +136,45 @@ const Dashboard = () => {
               <Text style={styles.emptyStateSubtext}>Create your first profile to get started</Text>
             </View>
           ) : (
-            profiles.map((profile) => (
+            profiles.map(profile => (
               <Pressable
                 key={profile.id}
                 style={styles.card}
-                onPress={() => navigateToProfile(profile.id)}
-              >
+                onPress={() => navigateToProfile(profile.id)}>
                 <View style={styles.cardContent}>
                   <View style={styles.previewContainer}>
                     {profile.preview_images ? (
-                      profile.preview_images.slice(0, 4).map((uri, index) => (
-                        <Image
-                          key={index}
-                          source={{ uri }}
-                          style={styles.previewImage}
-                        />
-                      ))
+                      profile.preview_images
+                        .slice(0, 4)
+                        .map((uri, index) => (
+                          <Image key={index} source={{ uri }} style={styles.previewImage} />
+                        ))
                     ) : (
                       <View style={styles.noPreviewContainer}>
                         <Ionicons name="images-outline" size={24} color={colors.grey[500]} />
                       </View>
                     )}
                   </View>
-                  <View style={[
-                    styles.statusBadge,
-                    { backgroundColor: profile.status === 'ready' ? colors.status.success : colors.status.warning }
-                  ]}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor:
+                          profile.status === 'ready'
+                            ? colors.status.success
+                            : colors.status.warning,
+                      },
+                    ]}>
                     <Text style={styles.statusText}>{profile.status}</Text>
                   </View>
-                  <Text style={styles.cardTitle}>{profile.name || `Profile ${profile.id.slice(0, 4)}`}</Text>
+                  <Text style={styles.cardTitle}>
+                    {profile.name || `Profile ${profile.id.slice(0, 4)}`}
+                  </Text>
                   <Text style={styles.cardDate}>
                     {format(new Date(profile.created_at), 'MMM d, yyyy')}
                   </Text>
                   {profile.total_images && (
-                    <Text style={styles.imageCount}>
-                      {profile.total_images} images
-                    </Text>
+                    <Text style={styles.imageCount}>{profile.total_images} images</Text>
                   )}
                 </View>
               </Pressable>
@@ -324,4 +337,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Dashboard; 
+export default Dashboard;

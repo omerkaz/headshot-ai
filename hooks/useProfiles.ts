@@ -34,10 +34,12 @@ export const useProfile = (id: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('headshot_profiles')
-        .select(`
+        .select(
+          `
           *,
           headshot_profile_images (*)
-        `)
+        `
+        )
         .eq('id', id)
         .single();
 
@@ -74,10 +76,7 @@ export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      ...updates
-    }: Partial<HeadshotProfile> & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: Partial<HeadshotProfile> & { id: string }) => {
       const { data, error } = await supabase
         .from('headshot_profiles')
         .update(updates)
@@ -88,7 +87,7 @@ export const useUpdateProfile = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: profileKeys.detail(data.id) });
       queryClient.invalidateQueries({ queryKey: profileKeys.lists() });
     },
@@ -101,10 +100,7 @@ export const useDeleteProfile = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('headshot_profiles')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('headshot_profiles').delete().eq('id', id);
 
       if (error) throw error;
     },
@@ -119,13 +115,7 @@ export const useAddProfileImages = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      profileId,
-      imageUrls,
-    }: {
-      profileId: string;
-      imageUrls: string[];
-    }) => {
+    mutationFn: async ({ profileId, imageUrls }: { profileId: string; imageUrls: string[] }) => {
       const images = imageUrls.map(url => ({
         profile_id: profileId,
         image_url: url,
@@ -143,4 +133,4 @@ export const useAddProfileImages = () => {
       queryClient.invalidateQueries({ queryKey: profileKeys.detail(profileId) });
     },
   });
-}; 
+};
