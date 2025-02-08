@@ -28,7 +28,6 @@ export default function () {
     try {
       console.log('Attempting login with:', { email });
 
-
       // Attempt login
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
