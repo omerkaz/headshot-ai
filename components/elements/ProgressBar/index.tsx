@@ -30,9 +30,9 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
   };
 
   const getProgressColor = () => {
-    if (imagesCount < 10) return colors.status.warning;
-    if (imagesCount < 20) return colors.status.success;
-    if (imagesCount < 30) return colors.status.error;
+    if (imagesCount < 10) return colors.status.error;
+    // if (imagesCount < 20) return colors.status.warning;
+    if (imagesCount < 30) return colors.status.success;
     return colors.status.success;
   };
 
