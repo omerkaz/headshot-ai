@@ -20,7 +20,7 @@ export default function DashboardLayout() {
       <Stack.Screen
         name="[id]"
         options={{
-          headerTitle: 'Generating Profile Details',
+          headerTitle: 'Headshot Profile',
           headerBackVisible: false,
           headerTintColor: colors.text,
           headerLeft: () => (

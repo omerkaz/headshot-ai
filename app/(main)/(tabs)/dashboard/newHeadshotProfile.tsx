@@ -2,7 +2,8 @@ import { ImageGrid } from '@/components/elements/ImageGrid';
 import { ImageModal } from '@/components/elements/ImageModal';
 import { ProfileNameBottomSheet } from '@/components/elements/ProfileNameBottomSheet';
 import { ProgressBar } from '@/components/elements/ProgressBar';
-import { profileService } from '@/services/profileService';
+import { supabase } from '@/services/initSupabase';
+import { profileImageService } from '@/services/profileService';
 import { colors } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -19,10 +20,6 @@ export default function ProfileDetail() {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [profileName, setProfileName] = useState('');
 
-  console.log('images', images);
-  console.log('selectedImage', selectedImage);
-  console.log('modalVisible', modalVisible);
-
   const handleImagePick = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -32,9 +29,18 @@ export default function ProfileDetail() {
       });
 
       if (!result.canceled) {
-        const newImages = result.assets.map(asset => asset.uri);
+        // Validate images before adding
+        const validImages = await Promise.all(
+          result.assets.map(async asset => {
+            const isValid = await profileImageService.validateImage(asset.uri);
+            return isValid ? asset.uri : null;
+          })
+        );
+
+        const filteredImages = validImages.filter((uri): uri is string => uri !== null);
+
         setImages(prev => {
-          const updatedImages = [...prev, ...newImages];
+          const updatedImages = [...prev, ...filteredImages];
           return updatedImages.slice(0, 30);
         });
       }
@@ -70,46 +76,37 @@ export default function ProfileDetail() {
     try {
       setProfileLoading(true);
 
-      // Convert image URIs to base64
-      const base64Images = await Promise.all(
-        images.map(async uri => {
-          const response = await fetch(uri);
-          const blob = await response.blob();
-          return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const base64 = reader.result as string;
-              resolve(base64);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
+      const user = await supabase.auth.getUser();
+      if (!user.data.user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      // Create the profile first
+      const { data: profile, error: profileError } = await supabase
+        .from('headshot_profiles')
+        .insert({
+          name: name,
+          status: 'pending',
+          user_id: user.data.user.id,
+          trigger_phrase: 'headshot',
         })
-      );
+        .select()
+        .single();
 
-      // TODO: Create profile in Supabase and get the ID
-      const tempProfileId = 'temp-id'; // This will come from Supabase later
+      if (profileError) throw profileError;
 
-      // Save images locally
-      await profileService.saveProfileImages(tempProfileId, base64Images);
+      // Save images locally with progress tracking
+      const savedImages = await profileImageService.saveProfileImages(profile.id, images);
+      console.log('Saved images:', savedImages);
 
-      // Close bottom sheet and clear form
+      // Success handling
       setIsBottomSheetOpen(false);
       setImages([]);
       setProfileName('');
-
-      // Show success message
-      Alert.alert('Success', 'Images saved successfully!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            // TODO: Navigate to profile detail or list
-          },
-        },
-      ]);
+      Alert.alert('Success', 'Profile created successfully!');
     } catch (error) {
-      console.error('Error saving images:', error);
-      Alert.alert('Error', 'Failed to save images. Please try again.');
+      console.error('Error saving profile:', error);
+      Alert.alert('Error', 'Failed to save profile. Please try again.');
     } finally {
       setProfileLoading(false);
     }
@@ -122,7 +119,7 @@ export default function ProfileDetail() {
       <ProgressBar imagesCount={images.length} onClearImages={() => setImages([])} />
 
       <ImageGrid
-        images={images}
+        imagePaths={images}
         onImageSelect={handleImageSelect}
         onImageRemove={handleImageRemove}
       />
@@ -160,6 +157,7 @@ export default function ProfileDetail() {
         onClose={() => setIsBottomSheetOpen(false)}
         onSave={handleProfileSave}
         imagesCount={images.length}
+        isLoading={profileLoading}
       />
     </SafeAreaView>
   );

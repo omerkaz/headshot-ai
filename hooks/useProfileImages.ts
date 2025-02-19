@@ -1,11 +1,12 @@
 import { useProfile } from '@/hooks/useProfiles';
+import { profileImageService } from '@/services/profileService';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
 export interface UseProfileImagesReturn {
-  images: string[];
+  imagePaths: string[];
   profileLoading: boolean;
   selectedImage: string | null;
   modalVisible: boolean;
@@ -18,33 +19,35 @@ export interface UseProfileImagesReturn {
 }
 
 export function useProfileImages(profileId: string): UseProfileImagesReturn {
-  const [images, setImages] = useState<string[]>([]);
+  const [imagePaths, setImagePaths] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // useEffect(() => {
-  //   loadProfile();
-  // }, [profileId]);
+  useEffect(() => {
+    loadProfile();
+  }, [profileId]);
 
   const { data: profile, isLoading: profileLoading } = useProfile(profileId);
   console.log('profile', profile);
 
-  // const loadProfile = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     // Here you would typically fetch profile data
-  //     await new Promise(resolve => setTimeout(resolve, 1000));
-  //     setIsLoading(false);
-  //   } catch (error) {
-  //     console.error('Error loading profile:', error);
-  //     Alert.alert(
-  //       'Error',
-  //       'Failed to load profile data',
-  //       [{ text: 'OK', onPress: () => router.back() }]
-  //     );
-  //   }
-  // };
+  const loadProfile = async () => {
+    try {
+      setIsLoading(true);
+      const profileImages = await profileImageService.getProfileImages(profileId);
+      console.log(
+        'profileImages',
+        profileImages.map(image => image)
+      );
+      setImagePaths(profileImages.map(image => image.image_url));
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      Alert.alert('Error', 'Failed to load profile data', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    }
+  };
 
   const handleImagePick = async () => {
     try {
@@ -56,7 +59,7 @@ export function useProfileImages(profileId: string): UseProfileImagesReturn {
 
       if (!result.canceled) {
         const newImages = result.assets.map(asset => asset.uri);
-        setImages(prev => {
+        setImagePaths(prev => {
           const updatedImages = [...prev, ...newImages];
           return updatedImages.slice(0, 30);
         });
@@ -68,7 +71,7 @@ export function useProfileImages(profileId: string): UseProfileImagesReturn {
   };
 
   const handleImageRemove = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+    setImagePaths(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleImageSelect = (uri: string) => {
@@ -82,7 +85,7 @@ export function useProfileImages(profileId: string): UseProfileImagesReturn {
   };
 
   const handleClearImages = () => {
-    setImages([]);
+    setImagePaths([]);
   };
 
   const handleSave = async () => {
@@ -102,7 +105,7 @@ export function useProfileImages(profileId: string): UseProfileImagesReturn {
   };
 
   return {
-    images,
+    imagePaths,
     profileLoading,
     selectedImage,
     modalVisible,

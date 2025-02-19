@@ -20,8 +20,9 @@ import { useProfileImages } from '@/hooks';
 
 export default function ProfileDetail() {
   const { id } = useLocalSearchParams();
+  console.log('id', id);
   const {
-    images,
+    imagePaths,
     profileLoading,
     selectedImage,
     modalVisible,
@@ -41,22 +42,23 @@ export default function ProfileDetail() {
       </View>
     );
   }
-
+  console.log('selectedImage', selectedImage);
+  console.log('imagePaths', imagePaths);
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
 
-      <ProgressBar imagesCount={images.length} onClearImages={handleClearImages} />
+      <ProgressBar imagesCount={imagePaths.length} onClearImages={handleClearImages} />
 
       <ImageGrid
-        images={images}
+        imagePaths={imagePaths}
         onImageSelect={handleImageSelect}
         onImageRemove={handleImageRemove}
       />
 
-      {images.length < 30 && (
+      {imagePaths.length < 30 && (
         <TouchableOpacity
-          style={[styles.addButton, images.length >= 30 && styles.addButtonDisabled]}
+          style={[styles.addButton, imagePaths.length >= 30 && styles.addButtonDisabled]}
           onPress={handleImagePick}>
           <LinearGradient
             colors={[colors.accent1, colors.accent3]}

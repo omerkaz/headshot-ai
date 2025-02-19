@@ -3,16 +3,16 @@ import React from 'react';
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface ImageGridProps {
-  images: string[];
+  imagePaths: string[];
   onImageSelect: (uri: string) => void;
   onImageRemove: (index: number) => void;
 }
 
-export function ImageGrid({ images, onImageSelect, onImageRemove }: ImageGridProps) {
+export function ImageGrid({ imagePaths, onImageSelect, onImageRemove }: ImageGridProps) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.grid}>
-        {images.map((uri, index) => (
+        {imagePaths.map((imagePath, index) => (
           <TouchableOpacity
             key={index}
             style={[
@@ -22,9 +22,9 @@ export function ImageGrid({ images, onImageSelect, onImageRemove }: ImageGridPro
               index % 4 === 2 && styles.smallImage,
               index % 4 === 3 && styles.mediumImage,
             ]}
-            onPress={() => onImageSelect(uri)}
+            onPress={() => onImageSelect(imagePath)}
             onLongPress={() => onImageRemove(index)}>
-            <Image source={{ uri }} style={styles.image} />
+            <Image source={{ uri: imagePath }} style={styles.image} />
           </TouchableOpacity>
         ))}
       </View>

@@ -35,19 +35,18 @@ const Dashboard = () => {
   useEffect(() => {
     // Check auth state when component mounts
     const checkAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-
-      if (session) {
-        console.log('User is authenticated with token:', session.access_token);
-        fetchProfiles();
-      } else {
-        setLoading(false);
-        router.push('/login');
-        setError('Please log in to view profiles');
-      }
+      // const {
+      //   data: { session },
+      // } = await supabase.auth.getSession();
+      // setIsAuthenticated(!!session);
+      // if (session) {
+      //   console.log('User is authenticated with token:', session.access_token);
+      //   fetchProfiles();
+      // } else {
+      //   setLoading(false);
+      //   router.push('/login');
+      //   setError('Please log in to view profiles');
+      // }
     };
 
     checkAuth();
@@ -86,6 +85,7 @@ const Dashboard = () => {
   };
 
   const navigateToProfile = (id: string) => {
+    console.log('navigateToProfile', id);
     router.push(`/dashboard/${id}`);
   };
 

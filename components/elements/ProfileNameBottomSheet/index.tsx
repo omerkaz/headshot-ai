@@ -1,7 +1,14 @@
 import { colors } from '@/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import BottomSheet from '../BottomSheet';
 
 interface ProfileNameBottomSheetProps {
@@ -9,6 +16,7 @@ interface ProfileNameBottomSheetProps {
   onClose: () => void;
   onSave: (name: string) => void;
   imagesCount: number;
+  isLoading: boolean;
 }
 
 export function ProfileNameBottomSheet({
@@ -16,6 +24,7 @@ export function ProfileNameBottomSheet({
   onClose,
   onSave,
   imagesCount,
+  isLoading,
 }: ProfileNameBottomSheetProps) {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
@@ -57,13 +66,20 @@ export function ProfileNameBottomSheet({
         />
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={handleSave}
+          disabled={!name.trim() || name.trim().length < 3 || name.trim().length > 50}>
           <LinearGradient
             colors={[colors.accent1, colors.accent3]}
             start={{ x: 0, y: 0 }}
             end={{ x: 2, y: 0 }}
             style={styles.gradient}>
-            <Text style={styles.saveButtonText}>Save Profile</Text>
+            {isLoading ? (
+              <ActivityIndicator size="small" color={colors.common.white} />
+            ) : (
+              <Text style={styles.saveButtonText}>Save Profile</Text>
+            )}
           </LinearGradient>
         </TouchableOpacity>
       </View>

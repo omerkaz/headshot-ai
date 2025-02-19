@@ -46,7 +46,7 @@ export const supabase = createClient(config.supabase.url, config.supabase.anonKe
     storage: ExpoSecureStorage,
     // Add these options to ensure proper session handling
     flowType: 'pkce',
-    debug: __DEV__,
+    debug: false,
   },
   db: {
     schema: 'public',
@@ -59,9 +59,9 @@ export const supabase = createClient(config.supabase.url, config.supabase.anonKe
 });
 
 // Add this to debug auth state changes
-if (__DEV__) {
-  supabase.auth.onAuthStateChange((event, session) => {
-    console.log('Auth state changed:', event);
-    console.log('Session token:', session?.access_token);
-  });
-}
+// if (__DEV__) {
+//   supabase.auth.onAuthStateChange((event, session) => {
+//     console.log('Auth state changed:', event);
+//     console.log('Session token:', session?.access_token);
+//   });
+// }
