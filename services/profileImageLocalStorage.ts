@@ -115,6 +115,29 @@ class ProfileImageService {
     }
   }
 
+  async deleteImageOfProfile(profileId: string, imageId: string, imagePath: string): Promise<void> {
+    try {
+      // Get current metadata
+      const metadata = await this.getMetadata();
+
+      if (!imagePath) {
+        throw new Error('Image not found in metadata');
+      }
+
+      // Remove the image from metadata
+      metadata.profiles[profileId] = metadata.profiles[profileId].filter(img => img.id !== imageId);
+
+      // Delete the actual file
+      await FileSystem.deleteAsync(imagePath, { idempotent: true });
+
+      // Save updated metadata
+      await this.saveMetadata(metadata);
+    } catch (error) {
+      console.error('Error deleting profile image:', error);
+      throw new Error('Failed to delete profile image');
+    }
+  }
+
   async deleteProfileImages(profileId: string): Promise<void> {
     try {
       const metadata = await this.getMetadata();

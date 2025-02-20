@@ -3,7 +3,7 @@ import { ImageModal } from '@/components/elements/ImageModal';
 import { ProfileNameBottomSheet } from '@/components/elements/ProfileNameBottomSheet';
 import { ProgressBar } from '@/components/elements/ProgressBar';
 import { supabase } from '@/services/initSupabase';
-import { profileImageService } from '@/services/profileService';
+import { profileImageService } from '@/services/profileImageLocalStorage';
 import { colors } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';

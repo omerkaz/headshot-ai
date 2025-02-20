@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   SafeAreaView,
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     // Check auth state when component mounts
@@ -93,6 +95,42 @@ const Dashboard = () => {
     router.push('/dashboard/newHeadshotProfile');
   };
 
+  const handleDelete = async (profileId: string) => {
+    Alert.alert(
+      'Delete Profile',
+      'Are you sure you want to delete this profile? This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setDeletingId(profileId);
+              const { error } = await supabase
+                .from('headshot_profiles')
+                .delete()
+                .eq('id', profileId);
+
+              if (error) throw error;
+
+              // Update the local state to remove the deleted profile
+              setProfiles(profiles.filter(profile => profile.id !== profileId));
+            } catch (err) {
+              console.error('Error deleting profile:', err);
+              Alert.alert('Error', 'Failed to delete profile. Please try again.');
+            } finally {
+              setDeletingId(null);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   console.log('profiles', profiles);
   if (loading) {
     return (
@@ -142,6 +180,19 @@ const Dashboard = () => {
                 style={styles.card}
                 onPress={() => navigateToProfile(profile.id)}>
                 <View style={styles.cardContent}>
+                  {/* Delete button */}
+                  <Pressable
+                    style={styles.deleteButton}
+                    onPress={e => {
+                      e.stopPropagation();
+                      handleDelete(profile.id);
+                    }}>
+                    {deletingId === profile.id ? (
+                      <ActivityIndicator size="small" color={colors.status.error} />
+                    ) : (
+                      <Ionicons name="trash-outline" size={20} color={colors.status.error} />
+                    )}
+                  </Pressable>
                   <View style={styles.previewContainer}>
                     {profile.preview_images ? (
                       profile.preview_images
@@ -334,6 +385,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.grey[500],
     marginTop: 8,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 1,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: colors.common.white,
+    shadowColor: colors.common.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
 });
 
