@@ -1,4 +1,3 @@
-import { ImageGrid } from '@/components/elements/ImageGrid';
 import { ImageModal } from '@/components/elements/ImageModal';
 import { ProfileNameBottomSheet } from '@/components/elements/ProfileNameBottomSheet';
 import { ProgressBar } from '@/components/elements/ProgressBar';
@@ -49,6 +48,13 @@ export default function ProfileDetail() {
       Alert.alert('Error', 'Failed to pick images');
     }
   };
+
+  // useEffect(() => {
+  //   console.log('images', images);
+  //   return () => {
+  //     profileImageService.saveProfileImages(id as string, images);
+  //   };
+  // }, [images]);
 
   const handleImageSelect = (uri: string) => {
     setSelectedImage(uri);
@@ -118,11 +124,11 @@ export default function ProfileDetail() {
 
       <ProgressBar imagesCount={images.length} onClearImages={() => setImages([])} />
 
-      <ImageGrid
-        imagePaths={images}
+      {/* <ImageGrid
+        imagesOfProfile={images}
         onImageSelect={handleImageSelect}
         onImageRemove={handleImageRemove}
-      />
+      /> */}
 
       {images.length < 30 && (
         <TouchableOpacity

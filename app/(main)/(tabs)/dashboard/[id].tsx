@@ -3,11 +3,11 @@ import { ImageModal } from '@/components/elements/ImageModal';
 import { ProgressBar } from '@/components/elements/ProgressBar';
 import { profileImageService } from '@/services/profileImageLocalStorage';
 import { colors } from '@/theme';
-import { ImageOfProfile } from '@/types';
+import { ImageOfProfile } from '@/types/imageOfProfile';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import {
@@ -31,13 +31,7 @@ export default function ProfileDetail() {
   useEffect(() => {
     const loadProfileImages = async () => {
       const profileImages = await profileImageService.getProfileImages(id as string);
-      setImagesOfProfile(
-        profileImages.map(image => ({
-          id: image.id,
-          image_url: image.image_url,
-          profile_id: image.profile_id,
-        }))
-      );
+      setImagesOfProfile(profileImages);
     };
     loadProfileImages();
     setIsLoading(false);
@@ -45,9 +39,18 @@ export default function ProfileDetail() {
 
   console.log('id', id);
 
-  const handleImageRemove = (profileId: string, imagePath: string, imageId: string) => {
-    setImagesOfProfile(prev => prev.filter(image => image.id !== imageId));
-    profileImageService.deleteImageOfProfile(profileId, imageId, imagePath);
+  const handleImageRemove = async (profileId: string, imageId: string, imagePath: string) => {
+    console.log('imageId', imageId);
+    console.log('imagesOfProfile', imagesOfProfile);
+    setImagesOfProfile(prev =>
+      prev.filter(image => {
+        console.log('image', image);
+        console.log('image.id', image.id);
+        console.log('imageId', imageId);
+        return image.id !== imageId;
+      })
+    );
+    await profileImageService.deleteImageOfProfile(profileId, imagePath, imageId);
   };
 
   const handleImageSelect = (uri: string) => {
@@ -73,12 +76,22 @@ export default function ProfileDetail() {
       });
 
       if (!result.canceled) {
-        const newImages = result.assets.map((asset: any) => asset.uri);
+        const newImages = result.assets.map((asset: any) => asset.uri as string);
+        const remainingImages = 30 - imagesOfProfile.length;
+        const imagesToSave = newImages.slice(0, remainingImages);
+        if (newImages.length > remainingImages) {
+          Alert.alert('Error', 'You can only upload 30 images. Some images will not be saved.');
+          return;
+        }
+
+        const newLocalSavedImages = await profileImageService.saveProfileImages(
+          id as string,
+          imagesToSave
+        );
         setImagesOfProfile(prev => {
-          const updatedImages = [...prev, ...newImages];
+          const updatedImages = [...prev, ...newLocalSavedImages];
           return updatedImages.slice(0, 30);
         });
-        profileImageService.saveProfileImages(id as string, newImages);
       }
     } catch (error) {
       console.error('Error picking images:', error);
@@ -86,21 +99,6 @@ export default function ProfileDetail() {
     }
   };
 
-  const handleSave = async () => {
-    try {
-      setIsLoading(true);
-      // Here you would typically upload images to your backend
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      Alert.alert('Success', 'Images saved successfully', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
-    } catch (error) {
-      console.error('Error saving images:', error);
-      Alert.alert('Error', 'Failed to save images');
-    } finally {
-      setIsLoading(false);
-    }
-  };
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>

@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -27,12 +27,15 @@ type Profile = {
   total_images?: number;
 };
 
+type TabType = 'not_ready' | 'ready' | 'getting_ready';
+
 const Dashboard = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>('not_ready');
 
   useEffect(() => {
     // Check auth state when component mounts
@@ -131,6 +134,35 @@ const Dashboard = () => {
     );
   };
 
+  const filteredProfiles = useMemo(
+    () =>
+      profiles.filter(profile => {
+        if (activeTab === 'ready') {
+          return profile.status === 'ready';
+        }
+        if (activeTab === 'getting_ready') {
+          return profile.status === 'getting_ready';
+        }
+        // if (activeTab === 'failed') {
+        //   return profile.status === 'failed';
+        // }
+        if (activeTab === 'not_ready') {
+          return profile.status === 'not_ready';
+        }
+      }),
+    [profiles, activeTab]
+  );
+
+  const TabButton = ({ type, label }: { type: TabType; label: string }) => (
+    <Pressable
+      style={[styles.tabButton, activeTab === type && styles.activeTabButton]}
+      onPress={() => setActiveTab(type)}>
+      <Text style={[styles.tabButtonText, activeTab === type && styles.activeTabButtonText]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+
   console.log('profiles', profiles);
   if (loading) {
     return (
@@ -167,14 +199,27 @@ const Dashboard = () => {
             </View>
           </Pressable>
 
-          {profiles.length === 0 ? (
+          {/* Tabs */}
+          <View style={styles.tabContainer}>
+            <TabButton type="not_ready" label="Not Ready" />
+            <TabButton type="getting_ready" label="Getting Ready" />
+            <TabButton type="ready" label="Ready" />
+          </View>
+
+          {filteredProfiles.length === 0 ? (
             <View style={styles.emptyState}>
               <Ionicons name="images-outline" size={48} color={colors.grey[500]} />
-              <Text style={styles.emptyStateText}>No profiles yet</Text>
-              <Text style={styles.emptyStateSubtext}>Create your first profile to get started</Text>
+              <Text style={styles.emptyStateText}>
+                No {activeTab === 'ready' ? 'ready' : 'pending'} profiles
+              </Text>
+              <Text style={styles.emptyStateSubtext}>
+                {activeTab === 'ready'
+                  ? 'Profiles will appear here when they are ready'
+                  : 'Create your first profile to get started'}
+              </Text>
             </View>
           ) : (
-            profiles.map(profile => (
+            filteredProfiles.map(profile => (
               <Pressable
                 key={profile.id}
                 style={styles.card}
@@ -317,7 +362,7 @@ const styles = StyleSheet.create({
   },
   createCard: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 16,
     borderStyle: 'dashed',
     borderWidth: 2,
     borderColor: colors.accent2,
@@ -398,6 +443,37 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 16,
+    backgroundColor: colors.common.white,
+    borderRadius: 8,
+    padding: 4,
+    shadowColor: colors.common.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  tabButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderRadius: 6,
+    marginHorizontal: 2,
+  },
+  activeTabButton: {
+    backgroundColor: colors.accent1,
+  },
+  tabButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.grey[500],
+  },
+  activeTabButtonText: {
+    color: colors.common.black,
   },
 });
 

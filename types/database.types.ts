@@ -1,4 +1,4 @@
-export type ProfileStatus = 'pending' | 'training' | 'completed' | 'failed';
+export type ProfileStatus = 'not_ready' | 'ready' | 'getting_ready' | 'failed';
 
 export interface HeadshotProfile {
   id: string;

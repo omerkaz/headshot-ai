@@ -115,7 +115,7 @@ class ProfileImageService {
     }
   }
 
-  async deleteImageOfProfile(profileId: string, imageId: string, imagePath: string): Promise<void> {
+  async deleteImageOfProfile(profileId: string, imagePath: string, imageId: string): Promise<void> {
     try {
       // Get current metadata
       const metadata = await this.getMetadata();
@@ -127,6 +127,10 @@ class ProfileImageService {
       // Remove the image from metadata
       metadata.profiles[profileId] = metadata.profiles[profileId].filter(img => img.id !== imageId);
 
+      console.log('imagePath', imagePath);
+      console.log('metadata', metadata);
+      console.log('profileId', profileId);
+      console.log('imageId', imageId);
       // Delete the actual file
       await FileSystem.deleteAsync(imagePath, { idempotent: true });
 

@@ -1,5 +1,5 @@
 import { colors } from '@/theme';
-import { ImageOfProfile } from '@/types';
+import { ImageOfProfile } from '@/types/imageOfProfile';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -7,7 +7,7 @@ import { Image, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from
 interface ImageGridProps {
   imagesOfProfile: ImageOfProfile[];
   onImageSelect: (uri: string) => void;
-  onImageRemove: (profileId: string, imagePath: string, imageId: string) => void;
+  onImageRemove: (profileId: string, imageId: string, imagePath: string) => void;
 }
 
 export function ImageGrid({ imagesOfProfile, onImageSelect, onImageRemove }: ImageGridProps) {
@@ -31,7 +31,7 @@ export function ImageGrid({ imagesOfProfile, onImageSelect, onImageRemove }: Ima
             </TouchableOpacity>
             <Pressable
               style={styles.deleteButton}
-              onPress={() => onImageRemove(image.profile_id, image.image_url, image.id)}>
+              onPress={() => onImageRemove(image.profile_id, image.id, image.image_url)}>
               <View style={styles.deleteIconContainer}>
                 <Ionicons name="close-circle" size={22} color={colors.status.error} />
               </View>
