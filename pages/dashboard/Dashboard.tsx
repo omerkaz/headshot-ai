@@ -1,7 +1,9 @@
 import { supabase } from '@/services/initSupabase'; // Make sure you have this setup
 import { colors } from '@/theme/colors';
+import { HeadshotProfile } from '@/types/database.types';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -17,25 +19,16 @@ import {
   View,
 } from 'react-native';
 
-// Enhanced Profile type
-type Profile = {
-  id: string;
-  status: string;
-  created_at: string;
-  name: string;
-  preview_images?: string[];
-  total_images?: number;
-};
-
 type TabType = 'not_ready' | 'ready' | 'getting_ready';
 
 const Dashboard = () => {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [profiles, setProfiles] = useState<HeadshotProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('not_ready');
+  const [submittingId, setSubmittingId] = useState<string | null>(null);
 
   useEffect(() => {
     // Check auth state when component mounts
@@ -89,9 +82,9 @@ const Dashboard = () => {
     }
   };
 
-  const navigateToProfile = (id: string) => {
+  const navigateToProfile = (id: string, status: string) => {
     console.log('navigateToProfile', id);
-    router.push(`/dashboard/${id}`);
+    router.push(`/dashboard/${id}?status=${status}`);
   };
 
   const createNewProfile = () => {
@@ -132,6 +125,32 @@ const Dashboard = () => {
         },
       ]
     );
+  };
+
+  const sendProfileToProcessing = async (profileId: string) => {
+    try {
+      setSubmittingId(profileId);
+
+      // Call to update the profile status in the database
+      const { error } = await supabase
+        .from('headshot_profiles')
+        .update({ status: 'getting_ready' })
+        .eq('id', profileId);
+
+      if (error) throw error;
+
+      // Update the local state to reflect the status change
+      setProfiles(
+        profiles.map(profile =>
+          profile.id === profileId ? { ...profile, status: 'getting_ready' } : profile
+        )
+      );
+    } catch (err) {
+      console.error('Error submitting profile:', err);
+      Alert.alert('Error', 'Failed to submit profile for processing. Please try again.');
+    } finally {
+      setSubmittingId(null);
+    }
   };
 
   const filteredProfiles = useMemo(
@@ -182,7 +201,7 @@ const Dashboard = () => {
       </View>
     );
   }
-
+  console.log('profiles', profiles);
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
@@ -223,7 +242,7 @@ const Dashboard = () => {
               <Pressable
                 key={profile.id}
                 style={styles.card}
-                onPress={() => navigateToProfile(profile.id)}>
+                onPress={() => navigateToProfile(profile.id, profile.status)}>
                 <View style={styles.cardContent}>
                   {/* Delete button */}
                   <Pressable
@@ -239,38 +258,52 @@ const Dashboard = () => {
                     )}
                   </Pressable>
                   <View style={styles.previewContainer}>
-                    {profile.preview_images ? (
-                      profile.preview_images
-                        .slice(0, 4)
-                        .map((uri, index) => (
-                          <Image key={index} source={{ uri }} style={styles.previewImage} />
-                        ))
+                    {profile.checkpoint_url ? (
+                      <Image
+                        source={{ uri: profile.checkpoint_url || '' }}
+                        style={styles.previewImage}
+                      />
                     ) : (
                       <View style={styles.noPreviewContainer}>
                         <Ionicons name="images-outline" size={24} color={colors.grey[500]} />
                       </View>
                     )}
                   </View>
-                  <View
-                    style={[
-                      styles.statusBadge,
-                      {
-                        backgroundColor:
-                          profile.status === 'ready'
-                            ? colors.status.success
-                            : colors.status.warning,
-                      },
-                    ]}>
-                    <Text style={styles.statusText}>{profile.status}</Text>
-                  </View>
-                  <Text style={styles.cardTitle}>
-                    {profile.name || `Profile ${profile.id.slice(0, 4)}`}
-                  </Text>
+                  <Text style={styles.cardTitle}>{profile.name}</Text>
                   <Text style={styles.cardDate}>
                     {format(new Date(profile.created_at), 'MMM d, yyyy')}
                   </Text>
-                  {profile.total_images && (
+                  {/* {profile.total_images && (
                     <Text style={styles.imageCount}>{profile.total_images} images</Text>
+                  )} */}
+
+                  {profile.status === 'not_ready' && profile.total_images >= 10 && (
+                    <Pressable
+                      style={styles.submitProfileButton}
+                      onPress={e => {
+                        e.stopPropagation();
+                        sendProfileToProcessing(profile.id);
+                      }}>
+                      <LinearGradient
+                        colors={[colors.accent3, colors.accent1]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={styles.submitGradient}>
+                        {submittingId === profile.id ? (
+                          <ActivityIndicator size="small" color={colors.common.white} />
+                        ) : (
+                          <>
+                            <Ionicons
+                              name="cloud-upload-outline"
+                              size={16}
+                              color={colors.common.white}
+                              style={styles.submitButtonIcon}
+                            />
+                            <Text style={styles.submitButtonText}>Prepare Profile</Text>
+                          </>
+                        )}
+                      </LinearGradient>
+                    </Pressable>
                   )}
                 </View>
               </Pressable>
@@ -404,17 +437,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  statusText: {
-    color: colors.common.white,
-    fontSize: 12,
-    fontWeight: '600',
-  },
   cardDate: {
     fontSize: 12,
     color: colors.grey[500],
@@ -474,6 +496,29 @@ const styles = StyleSheet.create({
   },
   activeTabButtonText: {
     color: colors.common.black,
+  },
+  submitProfileButton: {
+    marginTop: 12,
+    borderRadius: 16,
+    overflow: 'hidden',
+    width: '100%',
+    height: 36,
+  },
+  submitGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    paddingHorizontal: 12,
+  },
+  submitButtonText: {
+    color: colors.common.white,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  submitButtonIcon: {
+    marginRight: 6,
   },
 });
 

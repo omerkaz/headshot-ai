@@ -9,6 +9,7 @@ export interface HeadshotProfile {
   status: ProfileStatus;
   checkpoint_url: string | null;
   trigger_phrase: string | null;
+  total_images: number;
 }
 
 export interface HeadshotProfileImage {

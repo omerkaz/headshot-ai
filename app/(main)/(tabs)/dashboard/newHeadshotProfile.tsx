@@ -92,16 +92,17 @@ export default function ProfileDetail() {
         .from('headshot_profiles')
         .insert({
           name: name,
-          status: 'pending',
+          status: 'not_ready',
           user_id: user.data.user.id,
-          trigger_phrase: 'headshot',
+          trigger_phrase: Math.random().toString(36).substring(2, 15),
+          total_images: images.length,
         })
         .select()
         .single();
 
       if (profileError) throw profileError;
 
-      // Save images locally with progress tracking
+      // Save images locally
       const savedImages = await profileImageService.saveProfileImages(profile.id, images);
       console.log('Saved images:', savedImages);
 
