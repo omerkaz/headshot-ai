@@ -14,6 +14,7 @@ export interface HeadshotGeneratorInput {
   steps: number;
   resume_from_checkpoint: string;
   prompt: string;
+  num_images: number;
 }
 
 export interface StreamEvent {

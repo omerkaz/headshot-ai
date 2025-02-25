@@ -117,20 +117,21 @@ export default function ProfileDetail() {
   };
 
   const handleSubmitForProcessing = async () => {
-    if (imagesOfProfile.length < 5) {
-      Alert.alert('Not enough images', 'Please upload at least 5 images before submitting.');
+    if (imagesOfProfile.length < 10) {
+      Alert.alert('Not enough images', 'Please upload at least 10 images before submitting.');
       return;
     }
 
     try {
       setIsSubmitting(true);
 
-      // Here you would typically call your API to update the profile status
-      // For example:
-      // await supabase
-      //   .from('headshot_profiles')
-      //   .update({ status: 'getting_ready' })
-      //   .eq('id', id);
+      // Call to update the profile status in the database
+      const { error } = await supabase
+        .from('headshot_profiles')
+        .update({ status: 'getting_ready' })
+        .eq('id', id);
+
+      if (error) throw error;
 
       Alert.alert(
         'Success',
@@ -161,59 +162,67 @@ export default function ProfileDetail() {
       </View>
     );
   }
-  console.log('imagesOfProfile111', imagesOfProfile);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
 
       <ProgressBar imagesCount={imagesOfProfile.length} onClearImages={handleClearImages} />
 
-      <ImageGrid
-        imagesOfProfile={imagesOfProfile}
-        onImageSelect={handleImageSelect}
-        onImageRemove={handleImageRemove}
-      />
+      <View style={styles.contentContainer}>
+        <ImageGrid
+          imagesOfProfile={imagesOfProfile}
+          onImageSelect={handleImageSelect}
+          onImageRemove={handleImageRemove}
+        />
+      </View>
 
-      {imagesOfProfile.length < 30 && (
-        <TouchableOpacity
-          style={[styles.addButton, imagesOfProfile.length >= 30 && styles.addButtonDisabled]}
-          onPress={handleImagePick}>
-          <LinearGradient
-            colors={[colors.accent1, colors.accent3]}
-            start={{ x: 1, y: 0 }}
-            end={{ x: 1.8, y: 1 }}
-            style={styles.gradientButton}>
-            <Ionicons name="add" size={32} color={colors.accent2} />
-          </LinearGradient>
-        </TouchableOpacity>
-      )}
+      <View style={styles.buttonContainer}>
+        {imagesOfProfile.length < 30 && (
+          <TouchableOpacity
+            style={[styles.addButton, imagesOfProfile.length >= 30 && styles.addButtonDisabled]}
+            onPress={handleImagePick}>
+            <LinearGradient
+              colors={[colors.accent1, colors.accent3]}
+              start={{ x: 1, y: 0 }}
+              end={{ x: 1.8, y: 1 }}
+              style={styles.gradientButton}>
+              <Ionicons name="add" size={32} color={colors.accent2} />
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
 
-      {status === 'not_ready' && imagesOfProfile.length >= 5 && (
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={handleSubmitForProcessing}
-          disabled={isSubmitting}>
-          <LinearGradient
-            colors={[colors.accent3, colors.accent1]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradientButton}>
-            {isSubmitting ? (
-              <ActivityIndicator size="small" color={colors.common.white} />
-            ) : (
-              <>
-                <Ionicons
-                  name="cloud-upload-outline"
-                  size={24}
-                  color={colors.common.white}
-                  style={styles.buttonIcon}
-                />
-                <Text style={styles.submitButtonText}>Submit for Processing</Text>
-              </>
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
-      )}
+        {status === 'not_ready' && imagesOfProfile.length >= 10 && (
+          <TouchableOpacity
+            style={styles.submitButton}
+            onPress={handleSubmitForProcessing}
+            disabled={isSubmitting}>
+            <LinearGradient
+              colors={[colors.accent3, colors.accent1]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientButton}>
+              {isSubmitting ? (
+                <ActivityIndicator size="small" color={colors.common.white} />
+              ) : (
+                <LinearGradient
+                  colors={[colors.accent3, colors.accent1]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.gradientButton}>
+                  <Ionicons
+                    name="cloud-upload-outline"
+                    size={24}
+                    color={colors.common.white}
+                    style={styles.buttonIcon}
+                  />
+                  <Text style={styles.submitButtonText}>Submit for Processing</Text>
+                </LinearGradient>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
+      </View>
 
       <ImageModal visible={modalVisible} imageUri={selectedImage} onClose={handleModalClose} />
     </SafeAreaView>
@@ -236,10 +245,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  addButton: {
+  contentContainer: {
+    flex: 1,
+  },
+  buttonContainer: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 84,
     right: 24,
+    flexDirection: 'row-reverse',
+    gap: 12,
+  },
+  addButton: {
     width: 56,
     height: 56,
     borderRadius: 28,
@@ -265,21 +281,11 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   submitButton: {
-    position: 'absolute',
-    bottom: 24,
-    left: 24,
-    right: 24,
+    width: 200,
     height: 56,
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
     elevation: 5,
     overflow: 'hidden',
   },

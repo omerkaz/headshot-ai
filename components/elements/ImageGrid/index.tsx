@@ -12,7 +12,10 @@ interface ImageGridProps {
 
 export function ImageGrid({ imagesOfProfile, onImageSelect, onImageRemove }: ImageGridProps) {
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}>
       <View style={styles.grid}>
         {imagesOfProfile.map((image, index) => (
           <View
@@ -46,6 +49,9 @@ export function ImageGrid({ imagesOfProfile, onImageSelect, onImageRemove }: Ima
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  contentContainer: {
+    paddingBottom: 100,
   },
   grid: {
     padding: 8,

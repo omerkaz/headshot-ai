@@ -1,4 +1,5 @@
 import { ImageModal } from '@/components/elements/ImageModal';
+import { NewProfileImageGrid } from '@/components/elements/NewProfileImageGrid';
 import { ProfileNameBottomSheet } from '@/components/elements/ProfileNameBottomSheet';
 import { ProgressBar } from '@/components/elements/ProgressBar';
 import { supabase } from '@/services/initSupabase';
@@ -7,6 +8,7 @@ import { colors } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity } from 'react-native';
@@ -110,6 +112,9 @@ export default function ProfileDetail() {
       setIsBottomSheetOpen(false);
       setImages([]);
       setProfileName('');
+
+      router.push('/dashboard');
+
       Alert.alert('Success', 'Profile created successfully!');
     } catch (error) {
       console.error('Error saving profile:', error);
@@ -125,11 +130,11 @@ export default function ProfileDetail() {
 
       <ProgressBar imagesCount={images.length} onClearImages={() => setImages([])} />
 
-      {/* <ImageGrid
-        imagesOfProfile={images}
+      <NewProfileImageGrid
+        images={images}
         onImageSelect={handleImageSelect}
         onImageRemove={handleImageRemove}
-      /> */}
+      />
 
       {images.length < 30 && (
         <TouchableOpacity

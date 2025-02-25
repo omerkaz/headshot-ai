@@ -127,7 +127,7 @@ const Dashboard = () => {
     );
   };
 
-  const sendProfileToProcessing = async (profileId: string) => {
+  const handleSubmitForProcessing = async (profileId: string) => {
     try {
       setSubmittingId(profileId);
 
@@ -182,7 +182,6 @@ const Dashboard = () => {
     </Pressable>
   );
 
-  console.log('profiles', profiles);
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -201,7 +200,7 @@ const Dashboard = () => {
       </View>
     );
   }
-  console.log('profiles', profiles);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
@@ -273,21 +272,18 @@ const Dashboard = () => {
                   <Text style={styles.cardDate}>
                     {format(new Date(profile.created_at), 'MMM d, yyyy')}
                   </Text>
-                  {/* {profile.total_images && (
-                    <Text style={styles.imageCount}>{profile.total_images} images</Text>
-                  )} */}
 
                   {profile.status === 'not_ready' && profile.total_images >= 10 && (
                     <Pressable
                       style={styles.submitProfileButton}
                       onPress={e => {
                         e.stopPropagation();
-                        sendProfileToProcessing(profile.id);
+                        handleSubmitForProcessing(profile.id);
                       }}>
                       <LinearGradient
                         colors={[colors.accent3, colors.accent1]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
+                        start={{ x: 0, y: 1.8 }}
+                        end={{ x: 1.8, y: 1 }}
                         style={styles.submitGradient}>
                         {submittingId === profile.id ? (
                           <ActivityIndicator size="small" color={colors.common.white} />
@@ -299,7 +295,7 @@ const Dashboard = () => {
                               color={colors.common.white}
                               style={styles.submitButtonIcon}
                             />
-                            <Text style={styles.submitButtonText}>Prepare Profile</Text>
+                            <Text style={styles.submitButtonText}>Getting Ready</Text>
                           </>
                         )}
                       </LinearGradient>

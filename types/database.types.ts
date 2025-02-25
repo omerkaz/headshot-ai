@@ -8,10 +8,9 @@ export interface HeadshotProfile {
   updated_at: string;
   status: ProfileStatus;
   checkpoint_url: string | null;
-  trigger_phrase: string | null;
+  trigger_phrase: string;
   total_images: number;
 }
-
 export interface HeadshotProfileImage {
   id: string;
   profile_id: string;
