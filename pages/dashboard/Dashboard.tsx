@@ -1,4 +1,7 @@
+import { useHeadshotGeneratorFirstPhase } from '@/hooks/useHeadshotGenerator';
+import { StreamEvent } from '@/services/fal.ai.service';
 import { supabase } from '@/services/initSupabase'; // Make sure you have this setup
+import prepareProfileToLora from '@/services/prepareProfileToLora';
 import { colors } from '@/theme/colors';
 import { HeadshotProfile } from '@/types/database.types';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,7 +21,6 @@ import {
   Text,
   View,
 } from 'react-native';
-
 type TabType = 'not_ready' | 'ready' | 'getting_ready';
 
 const Dashboard = () => {
@@ -46,8 +48,8 @@ const Dashboard = () => {
       //   setError('Please log in to view profiles');
       // }
     };
-
-    checkAuth();
+    // testEdgeFunction();
+    // checkAuth();
 
     // Subscribe to auth changes
     const {
@@ -55,6 +57,7 @@ const Dashboard = () => {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
       if (session) {
+        console.log('User is authenticated with token:', session.access_token);
         fetchProfiles();
       }
     });
@@ -63,6 +66,12 @@ const Dashboard = () => {
       subscription.unsubscribe();
     };
   }, []);
+
+  // useEffect(() => {
+  //   profiles.forEach(profile => {
+  //     profile.status === "failed" ? prepareProfileForLora(profile.id) : null;
+  //   });
+  // }, [profiles]);
 
   const fetchProfiles = async () => {
     try {
@@ -127,10 +136,31 @@ const Dashboard = () => {
     );
   };
 
+  const { mutate: generateHeadshotWeightAndTenHeadshots } = useHeadshotGeneratorFirstPhase();
+
   const handleSubmitForProcessing = async (profileId: string) => {
     try {
       setSubmittingId(profileId);
 
+      const preparedProfile = await prepareProfileToLora(profileId);
+      console.log('preparedProfile', preparedProfile);
+      generateHeadshotWeightAndTenHeadshots(
+        {
+          input: preparedProfile,
+          headshotProfileId: profileId,
+          onProgress: ({ status }: StreamEvent) => {
+            console.log('status', status);
+          },
+        },
+        {
+          onSuccess: (data: any) => {
+            console.log('Success generateHeadshotWeightAndTenHeadshots', data);
+          },
+          onError: (error: any) => {
+            console.error('Error generateHeadshotWeightAndTenHeadshots', error);
+          },
+        }
+      );
       // Call to update the profile status in the database
       const { error } = await supabase
         .from('headshot_profiles')
