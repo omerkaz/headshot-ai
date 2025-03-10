@@ -1,5 +1,6 @@
 node_modules
 __DELELE_ME__
 # Dotenv files
-.env*
+.env
+.env.dev
 .cursorrules

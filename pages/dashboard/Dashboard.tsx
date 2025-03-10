@@ -1,7 +1,6 @@
 import { useHeadshotGeneratorFirstPhase } from '@/hooks/useHeadshotGenerator';
-import { StreamEvent } from '@/services/fal.ai.service';
 import { supabase } from '@/services/initSupabase'; // Make sure you have this setup
-import prepareProfileToLora from '@/services/prepareProfileToLora';
+import prepareProfileToPrepareRequest from '@/services/prepareProfileToPrepareRequest';
 import { colors } from '@/theme/colors';
 import { HeadshotProfile } from '@/types/database.types';
 import { Ionicons } from '@expo/vector-icons';
@@ -138,43 +137,19 @@ const Dashboard = () => {
 
   const { mutate: generateHeadshotWeightAndTenHeadshots } = useHeadshotGeneratorFirstPhase();
 
-  const handleSubmitForProcessing = async (profileId: string) => {
+  const handleSubmitForProcessing = async (profileId: string, triggerPhrase: string) => {
     try {
       setSubmittingId(profileId);
 
-      const preparedProfile = await prepareProfileToLora(profileId);
-      console.log('preparedProfile', preparedProfile);
-      generateHeadshotWeightAndTenHeadshots(
-        {
-          input: preparedProfile,
-          headshotProfileId: profileId,
-          onProgress: ({ status }: StreamEvent) => {
-            console.log('status', status);
-          },
-        },
-        {
-          onSuccess: (data: any) => {
-            console.log('Success generateHeadshotWeightAndTenHeadshots', data);
-          },
-          onError: (error: any) => {
-            console.error('Error generateHeadshotWeightAndTenHeadshots', error);
-          },
+      const preparedProfile = await prepareProfileToPrepareRequest(
+        profileId,
+        triggerPhrase,
+        (progress: number) => {
+          console.log('progress', progress);
         }
       );
-      // Call to update the profile status in the database
-      const { error } = await supabase
-        .from('headshot_profiles')
-        .update({ status: 'getting_ready' })
-        .eq('id', profileId);
-
-      if (error) throw error;
-
-      // Update the local state to reflect the status change
-      setProfiles(
-        profiles.map(profile =>
-          profile.id === profileId ? { ...profile, status: 'getting_ready' } : profile
-        )
-      );
+      console.log('preparedProfile', preparedProfile);
+      return;
     } catch (err) {
       console.error('Error submitting profile:', err);
       Alert.alert('Error', 'Failed to submit profile for processing. Please try again.');
@@ -308,7 +283,7 @@ const Dashboard = () => {
                       style={styles.submitProfileButton}
                       onPress={e => {
                         e.stopPropagation();
-                        handleSubmitForProcessing(profile.id);
+                        handleSubmitForProcessing(profile.id, profile.trigger_phrase);
                       }}>
                       <LinearGradient
                         colors={[colors.accent3, colors.accent1]}
