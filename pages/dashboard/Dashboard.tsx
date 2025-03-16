@@ -140,7 +140,8 @@ const Dashboard = () => {
   const handleSubmitForProcessing = async (profileId: string, triggerPhrase: string) => {
     try {
       setSubmittingId(profileId);
-
+      console.log('triggerPhrase', triggerPhrase);
+      console.log('profileId', profileId);
       const preparedProfile = await prepareProfileToPrepareRequest(
         profileId,
         triggerPhrase,

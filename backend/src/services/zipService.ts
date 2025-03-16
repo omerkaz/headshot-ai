@@ -35,15 +35,15 @@ export const createZip = async (
           responseType: 'arraybuffer' 
         });
         
-        // IMPORTANT: Use the trigger phrase in the file name to ensure uniqueness
-        const fileName = "TEST_photo_of_" + triggerPhrase + "_" + index + ".jpg";
+        // Improved naming convention for model training
+        const fileName = `${triggerPhrase}_${index + 1}.jpg`;
         zip.file(fileName, response.data as ArrayBuffer);
       } else {
         // It's a local file path, read directly from file system
         const fileData = await readFile(img);
         
-        // IMPORTANT: Use the trigger phrase in the file name to ensure uniqueness
-        const fileName = "TEST_photo_of_" + triggerPhrase + "_" + index + ".jpg";
+        // Improved naming convention for model training
+        const fileName = `${triggerPhrase}_${index + 1}.jpg`;
         zip.file(fileName, fileData);
         console.log('fileName', fileName);
       }
@@ -57,13 +57,22 @@ export const createZip = async (
   // Wait for all images to be processed
   await Promise.all(imagePromises);
   
+  // Add a metadata.json file to help with debugging and tracking
+  const metadata = {
+    triggerPhrase,
+    profileId,
+    imageCount: images.length,
+    created: new Date().toISOString()
+  };
+  zip.file('metadata.json', JSON.stringify(metadata, null, 2));
+  
   // Generate the zip content
   const zipContent = await zip.generateAsync({ type: 'nodebuffer' });
   
   // Define the path where the zip will be saved
   const zipDir = path.join(__dirname, '../../uploads/zips');
   fs.mkdirSync(zipDir, { recursive: true });
-  const zipPath = path.join(zipDir, `${profileId}.zip`);
+  const zipPath = path.join(zipDir, `${triggerPhrase}.zip`);
   
   // Write the zip file
   await writeFile(zipPath, zipContent);
@@ -76,12 +85,11 @@ export const createZip = async (
   };
 };
 
-export const uploadZipToStorage = async (zipPath: string, profileId: string) => {
+export const uploadZipToStorage = async (zipPath: string, profileId: string, triggerPhrase: string) => {
   const zipContent = await readFile(zipPath);
   const timestamp = Date.now();
-  // IMPORTANT: CONSIDER THE FILE NAME ABOUT WHAT IT SHOULD BE
-  const fileName = `${profileId}_${timestamp}.zip`; // Add timestamp to filename
-
+  // More descriptive zip file naming
+  const fileName = `${triggerPhrase}_${timestamp}.zip`;
 
   try {
     const { data, error } = await supabaseAdmin.storage

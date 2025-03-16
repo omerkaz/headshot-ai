@@ -1,27 +1,24 @@
 import { PreparedProfile } from '../types';
-import { getProfile, updateProfileStatus } from './profileService';
+import { updateProfileStatus } from './profileService';
 import { createZip, uploadZipToStorage } from './zipService';
 
-export const prepareProfileToLora = async (profileId: string, imagePaths: string[]): Promise<PreparedProfile > => {
+export const createZipUrl = async (profileId: string, triggerPhrase: string, imagePaths: string[]): Promise<PreparedProfile > => {
   try {
     // Get profile data
-    const profile = await getProfile(profileId);
+    // const profile = await getProfile(profileId);
 
-    if (!profile.trigger_phrase) {
-      console.warn('No trigger phrase found for profile, using default');
+    if (!triggerPhrase) {
+      throw new Error('No trigger phrase found for profile');
     }
 
-    const triggerPhrase = profile.trigger_phrase 
+    // const triggerPhrase = profile.trigger_phrase 
 
     console.log(`Creating and uploading zip with ${imagePaths.length} images for profile ${profileId}`);
 
     // Create zip and upload to storage
     const zip = await createZip(profileId, imagePaths, triggerPhrase);
-    const { publicUrl } = await uploadZipToStorage(zip.zipPath, profileId);
-    console.log('publicUrl', publicUrl);
-  
-    // Update profile status to 'processing'
-    await updateProfileStatus(profileId, 'processing');
+    const { publicUrl } = await uploadZipToStorage(zip.zipPath, profileId, triggerPhrase);
+    
 
     return {
       profileId,

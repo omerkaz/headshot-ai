@@ -2,7 +2,9 @@ import express from 'express';
 import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
-import { prepareProfileToLora } from '../services/prepareProfileService';
+import { createZipUrl } from '../services/createZipUrl';
+import { generateHeadshotWeight } from '../services/fal.ai';
+import { updateProfileStatus } from '../services/profileService';
 
 // Configure multer for handling file uploads
 const storage = multer.diskStorage({
@@ -51,7 +53,13 @@ const router = express.Router();
  */
 router.post('/:profileId/prepare', upload.array('images'), async (req, res) => {
   try {
-    const { profileId, triggerPhrase } = req.params;
+    const { profileId, triggerPhrase } = req.body;
+
+    console.log('triggerPhrase', triggerPhrase);
+    console.log('profileId', profileId);
+    if(!triggerPhrase) {
+      return res.status(400).json({ error: 'Trigger phrase is required' });
+    }
     
     if (!profileId) {
       return res.status(400).json({ error: 'Profile ID is required' });
@@ -72,11 +80,44 @@ router.post('/:profileId/prepare', upload.array('images'), async (req, res) => {
     const imagePaths = uploadedFiles.map(file => file.path);
     
     // Pass uploaded image paths to the preparation service
-    const preparedProfile = await prepareProfileToLora(profileId, imagePaths);
-    
+    const { zipUrl } = await createZipUrl(profileId, triggerPhrase, imagePaths);
+
+    if (!zipUrl) {
+      return res.status(500).json({
+        success: false,
+        error: 'zipUrl cannot be created'
+      });
+    }
+
+    const response = await generateHeadshotWeight({
+    learning_rate: 0.00009,
+    multiresolution_training: true,
+    subject_crop: true,
+      images_data_url: zipUrl,
+      trigger_phrase: triggerPhrase,
+      steps: 1000,
+      // prompt: 'Generate a headshot photo of a person',
+      // num_images: 1,
+    }, profileId);
+  console.log('response', response);
+    if (response?.status === 'IN_QUEUE' || response?.status === 'IN_PROGRESS') {
+      console.log('IN_QUEUE');  
+    // Update profile status to 'getting_ready'
+    await updateProfileStatus(profileId, 'getting_ready');
+    }
+
+    // surely this cannot be done immediatly so it probably 'll not work
+    if (response?.status === 'COMPLETED') {
+      console.log('COMPLETED');
+      // Update profile status to 'ready'
+      await updateProfileStatus(profileId, 'ready');
+    }
+    console.log('response', response);
+    // TODO: what should we return here?
+    // we're already makin request of fal.ai 
+    // so actually we dont need to return preparedProfile
     return res.status(200).json({
       success: true,
-      data: preparedProfile
     });
   } catch (error) {
     console.error('Error preparing profile:', error);
@@ -94,6 +135,7 @@ router.post('/:profileId/prepare', upload.array('images'), async (req, res) => {
           fs.unlinkSync(file.path);
           // IMPORTANT: IS THAT WORKING, CHECK THAT 
           const zipDir = path.join(__dirname, '../../uploads/zips');
+          console.log('zipDir', zipDir);
           fs.rmSync(zipDir, { recursive: true, force: true });
         } catch (err) {
           console.error(`Failed to delete temporary file ${file.path}:`, err);

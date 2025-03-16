@@ -4,11 +4,6 @@ import { profileImageService } from './profileImageLocalStorage';
 
 interface PreparedProfileResponse {
   success: boolean;
-  data?: {
-    profileId: string;
-    triggerPhrase: string;
-    zipUrl: string;
-  };
   error?: string;
 }
 
@@ -50,7 +45,7 @@ const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: 
     const API_URL = process.env.API_URL || 'http://localhost:3000';
     
     console.log(`Calling backend API to prepare profile ${profileId} with ${images.length} images`);
-    
+    console.log('formData', formData);
     // Pass the FormData in the request, with appropriate headers
     const response = await axios.post<PreparedProfileResponse>(
       `${API_URL}/api/profiles/${profileId}/prepare`,
@@ -68,13 +63,13 @@ const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: 
     
     const result = response.data;
     
-    if (!result.success || !result.data) {
+    if (!result.success) {
       throw new Error('Invalid response from server');
     }
     
-    console.log('Profile prepared successfully:', result.data);
+    console.log('Profile prepared successfully:', result);
     
-    return result.data;
+    return result;
   } catch (error) {
     console.error('Error in prepareProfileToLora:', error);
     throw new Error(`Failed to prepare profile: ${error instanceof Error ? error.message : 'Unknown error'}`);
