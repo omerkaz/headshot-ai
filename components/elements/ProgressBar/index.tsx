@@ -69,7 +69,7 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
       <View style={styles.progressBackground}>
         <View style={styles.minRequirementLineContainer}>
           <LinearGradient
-            colors={[colors.accent3, colors.accent1]}
+            colors={[colors.text, colors.accent2]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={styles.minRequirementLine}
@@ -95,7 +95,7 @@ export function ProgressBar({ imagesCount, onClearImages }: ProgressBarProps) {
             },
           ]}>
           <LinearGradient
-            colors={[colors.accent1, colors.accent3]}
+            colors={[colors.text, colors.accent2]}
             start={{ x: 0, y: 0 }}
             end={{ x: 2, y: 0 }}
             style={styles.gradient}

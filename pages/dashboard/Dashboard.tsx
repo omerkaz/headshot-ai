@@ -1,18 +1,16 @@
+import ProfileCard from '@/components/ProfileCard';
 import { useHeadshotGeneratorFirstPhase } from '@/hooks/useHeadshotGenerator';
 import { supabase } from '@/services/initSupabase'; // Make sure you have this setup
 import prepareProfileToPrepareRequest from '@/services/prepareProfileToPrepareRequest';
 import { colors } from '@/theme/colors';
 import { HeadshotProfile } from '@/types/database.types';
 import { Ionicons } from '@expo/vector-icons';
-import { format } from 'date-fns';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Image,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -80,7 +78,7 @@ const Dashboard = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-
+      console.log('data', data);
       setProfiles(data || []);
     } catch (err) {
       console.error('Error fetching profiles:', err);
@@ -244,71 +242,15 @@ const Dashboard = () => {
             </View>
           ) : (
             filteredProfiles.map(profile => (
-              <Pressable
+              <ProfileCard
                 key={profile.id}
-                style={styles.card}
-                onPress={() => navigateToProfile(profile.id, profile.status)}>
-                <View style={styles.cardContent}>
-                  {/* Delete button */}
-                  <Pressable
-                    style={styles.deleteButton}
-                    onPress={e => {
-                      e.stopPropagation();
-                      handleDelete(profile.id);
-                    }}>
-                    {deletingId === profile.id ? (
-                      <ActivityIndicator size="small" color={colors.status.error} />
-                    ) : (
-                      <Ionicons name="trash-outline" size={20} color={colors.status.error} />
-                    )}
-                  </Pressable>
-                  <View style={styles.previewContainer}>
-                    {profile.checkpoint_url ? (
-                      <Image
-                        source={{ uri: profile.checkpoint_url || '' }}
-                        style={styles.previewImage}
-                      />
-                    ) : (
-                      <View style={styles.noPreviewContainer}>
-                        <Ionicons name="images-outline" size={24} color={colors.grey[500]} />
-                      </View>
-                    )}
-                  </View>
-                  <Text style={styles.cardTitle}>{profile.name}</Text>
-                  <Text style={styles.cardDate}>
-                    {format(new Date(profile.created_at), 'MMM d, yyyy')}
-                  </Text>
-
-                  {profile.status === 'not_ready' && profile.total_images >= 10 && (
-                    <Pressable
-                      style={styles.submitProfileButton}
-                      onPress={e => {
-                        e.stopPropagation();
-                        handleSubmitForProcessing(profile.id, profile.trigger_phrase);
-                      }}>
-                      <LinearGradient
-                        colors={[colors.accent3, colors.accent1]}
-                        start={{ x: 0, y: 1.8 }}
-                        end={{ x: 1.8, y: 1 }}
-                        style={styles.submitGradient}>
-                        {submittingId === profile.id ? (
-                          <ActivityIndicator size="small" color={colors.common.white} />
-                        ) : (
-                          <>
-                            <Ionicons
-                              name="cloud-upload-outline"
-                              size={16}
-                              color={colors.common.white}
-                              style={styles.submitButtonIcon}
-                            />
-                            <Text style={styles.submitButtonText}>Getting Ready</Text>
-                          </>
-                        )}
-                      </LinearGradient>
-                    </Pressable>
-                  )}
-                </View>
-              </Pressable>
+                profile={profile}
+                deletingId={deletingId}
+                submittingId={submittingId}
+                onPress={navigateToProfile}
+                onDelete={handleDelete}
+                onSubmit={handleSubmitForProcessing}
+              />
             ))
           )}
         </View>
@@ -419,7 +361,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.grey[500],
   },
-  previewContainer: {
+  addImageIconContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 4,

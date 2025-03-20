@@ -88,20 +88,22 @@ export default function ProfileDetail() {
       if (!user.data.user?.id) {
         throw new Error('User not authenticated');
       }
-
+      console.log('user', user);
+      console.log('images', images.length);
       // Create the profile first
       const { data: profile, error: profileError } = await supabase
         .from('headshot_profiles')
+        // IMPORTANT: WHERE CREATING PROFILE VALUES
         .insert({
           name: name,
           status: 'not_ready',
           user_id: user.data.user.id,
-          trigger_phrase: Math.random().toString(36).substring(2, 15),
+          trigger_phrase: '',
           total_images: images.length,
         })
         .select()
         .single();
-
+      console.log('profile', profile);
       if (profileError) throw profileError;
 
       // Save images locally

@@ -27,7 +27,7 @@ const TabIcon: React.FC<TabIconProps> = ({ name, color, size, focused }) => {
           style={{ width: size, height: size }}
           maskElement={<Ionicons name={name} size={size} color="black" />}>
           <LinearGradient
-            colors={[colors.accent1, colors.accent3]}
+            colors={[colors.text, colors.accent2]}
             start={{ x: 0, y: 1.8 }}
             end={{ x: 1.8, y: 1 }}
             style={{ flex: 1 }}
@@ -39,7 +39,16 @@ const TabIcon: React.FC<TabIconProps> = ({ name, color, size, focused }) => {
 
   return (
     <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
-      <Ionicons name={name} size={size} color={color} />
+      <MaskedView
+        style={{ width: size, height: size }}
+        maskElement={<Ionicons name={name} size={size} color="black" />}>
+        <LinearGradient
+          colors={[colors.text, colors.accent2]}
+          start={{ x: 0, y: 1.8 }}
+          end={{ x: 1.8, y: 1 }}
+          style={{ flex: 1 }}
+        />
+      </MaskedView>
     </View>
   );
 };
