@@ -7,18 +7,19 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ? '**exists**' : '**missing**',
   });
 
-  const expoProjectId = process.env.EXPO_PROJECT_ID ?? '18adc0d0-eb1d-11e9-8009-d524ed5cc4a7';
+  const expoProjectId = process.env.EXPO_PROJECT_ID ?? '4d0cbd3e-6b2d-47e4-87c3-abdad72484be';
   const expoConfig: ExpoConfig = {
     ...config,
-    slug: process.env.EXPO_PUBLIC_APP_SLUG ?? 'professional-headshot-generator',
-    name: process.env.EXPO_PUBLIC_APP_NAME ?? 'Professional Headshot Generator',
+    slug: process.env.EXPO_PUBLIC_APP_SLUG ?? 'headshotai', 
+    name: process.env.EXPO_PUBLIC_APP_NAME ?? 'HeadshotAI',
+    scheme: 'headshotai',
     ios: {
       ...config.ios,
-      bundleIdentifier: process.env.EXPO_PUBLIC_IOS_BUNDLE_ID ?? 'omerkaz.headshot',
+      bundleIdentifier: process.env.EXPO_PUBLIC_IOS_BUNDLE_ID ?? 'omerkaz.headshotai',
     },
     android: {
       ...config.android,
-      package: process.env.EXPO_PUBLIC_ANDROID_PACKAGE ?? 'com.omerkaz.headshot',
+      package: process.env.EXPO_PUBLIC_ANDROID_PACKAGE ?? 'com.omerkaz.headshotai',
     },
     web: {
       ...config.web,
@@ -33,8 +34,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       // Supabase
       SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
       SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
-      // Fal.ai
-      FAL_API_KEY: process.env.EXPO_PUBLIC_FAL_API_KEY,
     },
     plugins: [
       'expo-router',

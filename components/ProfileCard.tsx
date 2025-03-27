@@ -13,6 +13,7 @@ interface ProfileCardProps {
   onPress: (id: string, status: string) => void;
   onDelete: (id: string) => void;
   onSubmit: (id: string, triggerPhrase: string) => void;
+  onGenerate: (id: string) => void;
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
@@ -22,6 +23,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onPress,
   onDelete,
   onSubmit,
+  onGenerate,
 }) => {
   // Determine status color
   const getStatusColor = (status: string) => {
@@ -52,7 +54,10 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   };
 
   return (
-    <Pressable style={styles.card} onPress={() => onPress(profile.id, profile.status)}>
+    <Pressable
+      style={styles.card}
+      onPress={() => onPress(profile.id, profile.status)}
+      android_ripple={{ color: colors.grey[200], borderless: false }}>
       <View style={styles.cardContent}>
         {/* Status indicator */}
         <View style={styles.statusRow}>
@@ -64,6 +69,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           {/* Delete button - moved to status row */}
           <Pressable
             style={styles.deleteButton}
+            hitSlop={10}
             onPress={e => {
               e.stopPropagation();
               onDelete(profile.id);
@@ -71,7 +77,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             {deletingId === profile.id ? (
               <ActivityIndicator size="small" color={colors.status.error} />
             ) : (
-              <Ionicons name="trash-outline" size={18} color={colors.status.error} />
+              <Ionicons name="trash-outline" size={20} color={colors.status.error} />
             )}
           </Pressable>
         </View>
@@ -79,7 +85,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         {/* Profile info section */}
         <View style={styles.profileInfo}>
           <View style={styles.iconContainer}>
-            <Ionicons name="person-circle-outline" size={30} color={colors.text} />
+            <Ionicons name="person-circle-outline" size={36} color={colors.text} />
           </View>
 
           <View style={styles.profileTextContainer}>
@@ -92,14 +98,14 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
             {profile.total_images > 0 && (
               <View style={styles.imageCountContainer}>
-                <Ionicons name="images-outline" size={12} color={colors.grey[500]} />
+                <Ionicons name="images-outline" size={14} color={colors.grey[500]} />
                 <Text style={styles.imageCount}>{profile.total_images} images</Text>
               </View>
             )}
           </View>
         </View>
 
-        {/* Action button for not ready profiles */}
+        {/* Action buttons based on status */}
         {profile.status === 'not_ready' && profile.total_images >= 10 && (
           <Pressable
             style={styles.submitProfileButton}
@@ -108,9 +114,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
               onSubmit(profile.id, profile.trigger_phrase);
             }}>
             <LinearGradient
-              colors={[colors.text, colors.accent2]}
-              start={{ x: 0, y: 1.8 }}
-              end={{ x: 1.8, y: 1 }}
+              colors={['#6366f1', '#3b82f6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
               style={styles.submitGradient}>
               {submittingId === profile.id ? (
                 <ActivityIndicator size="small" color={colors.common.white} />
@@ -118,7 +124,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                 <>
                   <Ionicons
                     name="cloud-upload-outline"
-                    size={16}
+                    size={18}
                     color={colors.common.white}
                     style={styles.submitButtonIcon}
                   />
@@ -129,10 +135,34 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
           </Pressable>
         )}
 
+        {/* Generate Images button - only shown when status is ready */}
+        {profile.status === 'ready' && (
+          <Pressable
+            style={styles.generateButton}
+            onPress={e => {
+              e.stopPropagation();
+              onGenerate(profile.id);
+            }}>
+            <LinearGradient
+              colors={['#10b981', '#059669']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.generateGradient}>
+              <Ionicons
+                name="sparkles-outline"
+                size={18}
+                color={colors.common.white}
+                style={styles.generateButtonIcon}
+              />
+              <Text style={styles.generateButtonText}>Generate Images</Text>
+            </LinearGradient>
+          </Pressable>
+        )}
+
         {/* View Details hint */}
         <View style={styles.viewDetailsContainer}>
           <Text style={styles.viewDetailsText}>Tap to view details</Text>
-          <Ionicons name="chevron-forward" size={14} color={colors.grey[400]} />
+          <Ionicons name="chevron-forward" size={16} color={colors.grey[400]} />
         </View>
       </View>
     </Pressable>
@@ -143,42 +173,42 @@ const styles = StyleSheet.create({
   card: {
     width: '48%',
     backgroundColor: colors.common.white,
-    borderRadius: 12,
+    borderRadius: 16,
     marginBottom: 16,
-    elevation: 4,
-    shadowColor: colors.common.black,
+    elevation: 3,
+    shadowColor: 'rgba(0,0,0,0.2)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
     overflow: 'hidden',
   },
   cardContent: {
-    padding: 12,
+    padding: 16,
   },
   statusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   statusIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     marginRight: 6,
   },
   statusText: {
-    fontSize: 12,
-    color: colors.grey[600],
+    fontSize: 14,
+    color: colors.grey[700],
     fontWeight: '500',
     flex: 1,
   },
   profileInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 14,
   },
   iconContainer: {
-    marginRight: 8,
+    marginRight: 12,
   },
   profileTextContainer: {
     flex: 1,
@@ -187,41 +217,39 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: colors.text,
+    marginBottom: 2,
   },
   cardDate: {
     fontSize: 12,
     color: colors.grey[500],
-    marginTop: 2,
+    marginBottom: 4,
   },
   imageCountContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
   },
   imageCount: {
     fontSize: 12,
-    color: colors.grey[500],
+    color: colors.grey[600],
     marginLeft: 4,
+    fontWeight: '500',
   },
   deleteButton: {
-    padding: 6,
+    padding: 8,
     borderRadius: 20,
-    backgroundColor: colors.grey[100],
   },
   submitProfileButton: {
-    marginTop: 8,
-    marginBottom: 8,
     borderRadius: 12,
     overflow: 'hidden',
     width: '100%',
-    height: 36,
+    marginBottom: 12,
   },
   submitGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: '100%',
+    paddingVertical: 10,
     paddingHorizontal: 12,
   },
   submitButtonText: {
@@ -232,6 +260,28 @@ const styles = StyleSheet.create({
   submitButtonIcon: {
     marginRight: 6,
   },
+  generateButton: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    width: '100%',
+    marginBottom: 12,
+  },
+  generateGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  generateButtonText: {
+    color: colors.common.white,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  generateButtonIcon: {
+    marginRight: 6,
+  },
   viewDetailsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -239,7 +289,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   viewDetailsText: {
-    fontSize: 11,
+    fontSize: 12,
     color: colors.grey[400],
     marginRight: 2,
   },

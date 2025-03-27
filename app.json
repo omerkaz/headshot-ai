@@ -1,11 +1,15 @@
 {
   "expo": {
-    "name": "react-native-boilerplate",
-    "slug": "react-native-boilerplate",
-    "version": "3.0.0",
-    "owner": "wataru",
+    "name": "HeadshotAI",
+    "slug": "headshotai",
+    "version": "0.9.0",
+    "owner": "omerkaz",
     "newArchEnabled": true,
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "orientation": "portrait",
     "icon": "./assets/images/logo-lg.png",
     "userInterfaceStyle": "automatic",
@@ -18,7 +22,11 @@
       "resizeMode": "contain"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "omerkaz.headshotai",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {

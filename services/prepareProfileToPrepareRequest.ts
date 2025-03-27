@@ -48,7 +48,7 @@ const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: 
     console.log('formData', formData);
     // Pass the FormData in the request, with appropriate headers
     const response = await axios.post<PreparedProfileResponse>(
-      `${API_URL}/api/profiles/${profileId}/prepare`,
+      `${API_URL}/api/headshot-profiles/create-weight`,
       formData,
       {
         headers: {

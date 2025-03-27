@@ -1,10 +1,10 @@
 import ProfileCard from '@/components/ProfileCard';
-import { useHeadshotGeneratorFirstPhase } from '@/hooks/useHeadshotGenerator';
 import { supabase } from '@/services/initSupabase'; // Make sure you have this setup
 import prepareProfileToPrepareRequest from '@/services/prepareProfileToPrepareRequest';
 import { colors } from '@/theme/colors';
 import { HeadshotProfile } from '@/types/database.types';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -28,25 +28,25 @@ const Dashboard = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('not_ready');
   const [submittingId, setSubmittingId] = useState<string | null>(null);
-
+  console.log('I was here 2');
   useEffect(() => {
     // Check auth state when component mounts
     const checkAuth = async () => {
-      // const {
-      //   data: { session },
-      // } = await supabase.auth.getSession();
-      // setIsAuthenticated(!!session);
-      // if (session) {
-      //   console.log('User is authenticated with token:', session.access_token);
-      //   fetchProfiles();
-      // } else {
-      //   setLoading(false);
-      //   router.push('/login');
-      //   setError('Please log in to view profiles');
-      // }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+      if (session) {
+        console.log('User is authenticated with token:', session.access_token);
+        fetchProfiles();
+      } else {
+        setLoading(false);
+        router.push('/login');
+        setError('Please log in to view profiles');
+      }
     };
-    // testEdgeFunction();
-    // checkAuth();
+
+    checkAuth();
 
     // Subscribe to auth changes
     const {
@@ -56,6 +56,9 @@ const Dashboard = () => {
       if (session) {
         console.log('User is authenticated with token:', session.access_token);
         fetchProfiles();
+      } else {
+        setLoading(false);
+        router.push('/login');
       }
     });
 
@@ -72,6 +75,7 @@ const Dashboard = () => {
 
   const fetchProfiles = async () => {
     try {
+      console.log('I was here 1');
       const { data, error } = await supabase
         .from('headshot_profiles')
         .select('*')
@@ -84,6 +88,7 @@ const Dashboard = () => {
       console.error('Error fetching profiles:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
+      console.log('I was here');
       setLoading(false);
     }
   };
@@ -91,6 +96,10 @@ const Dashboard = () => {
   const navigateToProfile = (id: string, status: string) => {
     console.log('navigateToProfile', id);
     router.push(`/dashboard/${id}?status=${status}`);
+  };
+
+  const navigateToGenerateImage = (id: string) => {
+    router.push(`/dashboard/generateImage?profileId=${id}`);
   };
 
   const createNewProfile = () => {
@@ -132,8 +141,6 @@ const Dashboard = () => {
       ]
     );
   };
-
-  const { mutate: generateHeadshotWeightAndTenHeadshots } = useHeadshotGeneratorFirstPhase();
 
   const handleSubmitForProcessing = async (profileId: string, triggerPhrase: string) => {
     try {
@@ -180,7 +187,26 @@ const Dashboard = () => {
     <Pressable
       style={[styles.tabButton, activeTab === type && styles.activeTabButton]}
       onPress={() => setActiveTab(type)}>
-      <Text style={[styles.tabButtonText, activeTab === type && styles.activeTabButtonText]}>
+      {activeTab === type && (
+        <LinearGradient
+          colors={
+            type === 'ready'
+              ? ['#10b981', '#059669']
+              : type === 'getting_ready'
+                ? ['#8b5cf6', '#ec4899']
+                : ['#6366f1', '#3b82f6']
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.tabGradient]}
+        />
+      )}
+      <Text
+        style={[
+          styles.tabButtonText,
+          activeTab === type && styles.activeTabButtonText,
+          type === 'getting_ready' && styles.tabButtonTextGettingReady,
+        ]}>
         {label}
       </Text>
     </Pressable>
@@ -208,10 +234,18 @@ const Dashboard = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
-      <ScrollView style={styles.scrollView}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>HeadshotAI</Text>
+          <Text style={styles.headerSubtitle}>Professional AI-powered portraits</Text>
+        </View>
+
         <View style={styles.cardsContainer}>
           {/* Create New Profile Card */}
-          <Pressable style={[styles.card, styles.createCard]} onPress={createNewProfile}>
+          <Pressable
+            style={[styles.createCard]}
+            onPress={createNewProfile}
+            android_ripple={{ color: colors.grey[200], borderless: false }}>
             <View style={styles.cardContent}>
               <View style={styles.createIconContainer}>
                 <Ionicons name="add-circle" size={40} color={colors.text} />
@@ -230,28 +264,39 @@ const Dashboard = () => {
 
           {filteredProfiles.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="images-outline" size={48} color={colors.grey[500]} />
+              <Ionicons name="images-outline" size={60} color={colors.grey[400]} />
               <Text style={styles.emptyStateText}>
-                No {activeTab === 'ready' ? 'ready' : 'pending'} profiles
+                No{' '}
+                {activeTab === 'ready'
+                  ? 'ready'
+                  : activeTab === 'getting_ready'
+                    ? 'processing'
+                    : 'pending'}{' '}
+                profiles
               </Text>
               <Text style={styles.emptyStateSubtext}>
                 {activeTab === 'ready'
                   ? 'Profiles will appear here when they are ready'
-                  : 'Create your first profile to get started'}
+                  : activeTab === 'getting_ready'
+                    ? 'Profiles being processed will appear here'
+                    : 'Create your first profile to get started'}
               </Text>
             </View>
           ) : (
-            filteredProfiles.map(profile => (
-              <ProfileCard
-                key={profile.id}
-                profile={profile}
-                deletingId={deletingId}
-                submittingId={submittingId}
-                onPress={navigateToProfile}
-                onDelete={handleDelete}
-                onSubmit={handleSubmitForProcessing}
-              />
-            ))
+            <View style={styles.profilesGrid}>
+              {filteredProfiles.map(profile => (
+                <ProfileCard
+                  key={profile.id}
+                  profile={profile}
+                  deletingId={deletingId}
+                  submittingId={submittingId}
+                  onPress={navigateToProfile}
+                  onDelete={handleDelete}
+                  onSubmit={handleSubmitForProcessing}
+                  onGenerate={navigateToGenerateImage}
+                />
+              ))}
+            </View>
           )}
         </View>
       </ScrollView>
@@ -267,8 +312,29 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollViewContent: {
+    paddingBottom: 20,
+  },
+  headerContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 16,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.text,
+    letterSpacing: -0.5,
+  },
+  headerSubtitle: {
+    fontSize: 15,
+    color: colors.grey[600],
+    marginTop: 4,
+  },
   cardsContainer: {
     padding: 16,
+  },
+  profilesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
@@ -328,38 +394,53 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   emptyState: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 32,
+    padding: 40,
+    marginTop: 20,
   },
   emptyStateText: {
-    fontSize: 16,
-    color: colors.grey[500],
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.grey[700],
+    marginTop: 16,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: colors.grey[600],
+    marginTop: 8,
+    textAlign: 'center',
   },
   createCard: {
     width: '100%',
     marginBottom: 16,
-    borderStyle: 'dashed',
-    borderWidth: 2,
-    borderColor: colors.accent2,
+    borderRadius: 16,
     backgroundColor: colors.accent1,
+    padding: 4,
+    elevation: 2,
+    shadowColor: colors.common.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   createIconContainer: {
-    padding: 16,
-    borderRadius: 50,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     backgroundColor: colors.common.white,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 12,
   },
   createCardTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: colors.text,
     marginBottom: 4,
   },
   createCardSubtitle: {
     fontSize: 14,
-    color: colors.grey[500],
+    color: colors.grey[600],
   },
   addImageIconContainer: {
     flexDirection: 'row',
@@ -392,11 +473,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontWeight: '500',
   },
-  emptyStateSubtext: {
-    fontSize: 14,
-    color: colors.grey[500],
-    marginTop: 8,
-  },
   deleteButton: {
     position: 'absolute',
     top: 8,
@@ -413,33 +489,51 @@ const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: 'row',
     width: '100%',
-    marginBottom: 16,
+    marginBottom: 20,
     backgroundColor: colors.common.white,
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 4,
     shadowColor: colors.common.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 4,
+    elevation: 2,
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 14,
     alignItems: 'center',
-    borderRadius: 6,
+    borderRadius: 10,
     marginHorizontal: 2,
+    position: 'relative',
+    overflow: 'hidden',
   },
   activeTabButton: {
-    backgroundColor: colors.accent1,
+    elevation: 3,
+    shadowColor: 'rgba(0,0,0,0.15)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+  },
+  tabGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.12,
   },
   tabButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: colors.grey[500],
+    color: colors.grey[600],
+  },
+  tabButtonTextGettingReady: {
+    color: colors.grey[400],
   },
   activeTabButtonText: {
-    color: colors.common.black,
+    color: colors.text,
+    fontWeight: '700',
   },
   submitProfileButton: {
     marginTop: 12,

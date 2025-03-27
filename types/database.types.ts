@@ -1,5 +1,22 @@
 export type ProfileStatus = 'not_ready' | 'ready' | 'getting_ready' | 'failed';
 
+export interface ProfileValues {
+  triggerPhrase: string;
+  profileId: string;
+}
+// interface LoraWeight {
+//   path: string;
+//   scale?: number; // Default: 1
+// }
+// export interface LoraValues {
+//   loras: LoraWeight[];
+// }
+
+export interface GenerateImageInput {
+  profileValues: ProfileValues;
+  loraPath: string;
+}
+
 export interface HeadshotProfile {
   id: string;
   user_id: string;
@@ -10,6 +27,7 @@ export interface HeadshotProfile {
   checkpoint_url: string | null;
   trigger_phrase: string;
   total_images: number;
+  weight_url: string | null;
 }
 export interface HeadshotProfileImage {
   id: string;

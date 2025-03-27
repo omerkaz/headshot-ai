@@ -44,9 +44,8 @@ export const supabase = createClient(config.supabase.url, config.supabase.anonKe
     persistSession: true,
     autoRefreshToken: true,
     storage: ExpoSecureStorage,
-    // Add these options to ensure proper session handling
     flowType: 'pkce',
-    debug: false,
+    debug: true, // Enable debug mode temporarily
   },
   db: {
     schema: 'public',
