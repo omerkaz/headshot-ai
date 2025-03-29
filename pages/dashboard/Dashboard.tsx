@@ -24,77 +24,38 @@ const Dashboard = () => {
   const [profiles, setProfiles] = useState<HeadshotProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('not_ready');
   const [submittingId, setSubmittingId] = useState<string | null>(null);
-  console.log('I was here 2');
+
   useEffect(() => {
-    // Check auth state when component mounts
-    const checkAuth = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-      if (session) {
-        console.log('User is authenticated with token:', session.access_token);
-        fetchProfiles();
-      } else {
-        setLoading(false);
-        router.push('/login');
-        setError('Please log in to view profiles');
-      }
-    };
-
-    checkAuth();
-
-    // Subscribe to auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
-      if (session) {
-        console.log('User is authenticated with token:', session.access_token);
-        fetchProfiles();
-      } else {
-        setLoading(false);
-        router.push('/login');
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  // useEffect(() => {
-  //   profiles.forEach(profile => {
-  //     profile.status === "failed" ? prepareProfileForLora(profile.id) : null;
-  //   });
-  // }, [profiles]);
+    // Fetch profiles immediately since we know user is authenticated
+    fetchProfiles();
+    // You might want to re-fetch if something external changes,
+    // otherwise, fetching only once on mount might be sufficient.
+    // Consider adding dependencies if needed.
+  }, []); // Runs once when the component mounts
 
   const fetchProfiles = async () => {
+    setLoading(true); // Set loading true when starting fetch
+    setError(null); // Clear previous errors
     try {
-      console.log('I was here 1');
       const { data, error } = await supabase
         .from('headshot_profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      console.log('data', data);
       setProfiles(data || []);
     } catch (err) {
       console.error('Error fetching profiles:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
-      console.log('I was here');
       setLoading(false);
     }
   };
 
   const navigateToProfile = (id: string, status: string) => {
-    console.log('navigateToProfile', id);
     router.push(`/dashboard/${id}?status=${status}`);
   };
 
@@ -142,7 +103,7 @@ const Dashboard = () => {
     );
   };
 
-  const handleSubmitForProcessing = async (profileId: string, triggerPhrase: string) => {
+  const submitProfile = async (profileId: string, triggerPhrase: string) => {
     try {
       setSubmittingId(profileId);
       console.log('triggerPhrase', triggerPhrase);
@@ -223,7 +184,7 @@ const Dashboard = () => {
   if (error) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <Text style={styles.errorText}>Error: {error}</Text>
+        <Text style={styles.errorText}>Error fetching profiles: {error}</Text>
         <Pressable style={styles.retryButton} onPress={fetchProfiles}>
           <Text style={styles.retryText}>Retry</Text>
         </Pressable>
@@ -235,11 +196,6 @@ const Dashboard = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerTitle}>HeadshotAI</Text>
-          <Text style={styles.headerSubtitle}>Professional AI-powered portraits</Text>
-        </View>
-
         <View style={styles.cardsContainer}>
           {/* Create New Profile Card */}
           <Pressable
@@ -292,7 +248,7 @@ const Dashboard = () => {
                   submittingId={submittingId}
                   onPress={navigateToProfile}
                   onDelete={handleDelete}
-                  onSubmit={handleSubmitForProcessing}
+                  onSubmit={submitProfile}
                   onGenerate={navigateToGenerateImage}
                 />
               ))}

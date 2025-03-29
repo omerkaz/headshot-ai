@@ -24,7 +24,7 @@ export default function ProfileDetail() {
   const handleImagePick = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         allowsMultipleSelection: true,
         quality: 1,
       });
@@ -50,13 +50,6 @@ export default function ProfileDetail() {
       Alert.alert('Error', 'Failed to pick images');
     }
   };
-
-  // useEffect(() => {
-  //   console.log('images', images);
-  //   return () => {
-  //     profileImageService.saveProfileImages(id as string, images);
-  //   };
-  // }, [images]);
 
   const handleImageSelect = (uri: string) => {
     setSelectedImage(uri);
@@ -88,27 +81,45 @@ export default function ProfileDetail() {
       if (!user.data.user?.id) {
         throw new Error('User not authenticated');
       }
-      console.log('user', user);
-      console.log('images', images.length);
-      // Create the profile first
+      const userId = user.data.user.id;
+
+      // Create the profile first (without trigger phrase initially)
       const { data: profile, error: profileError } = await supabase
         .from('headshot_profiles')
-        // IMPORTANT: WHERE CREATING PROFILE VALUES
         .insert({
           name: name,
-          status: 'not_ready',
-          user_id: user.data.user.id,
-          trigger_phrase: '',
+          status: 'not_ready', // Or 'training' if training starts immediately
+          user_id: userId,
+          // trigger_phrase is initially null or omitted
           total_images: images.length,
         })
         .select()
         .single();
-      console.log('profile', profile);
-      if (profileError) throw profileError;
 
-      // Save images locally
-      const savedImages = await profileImageService.saveProfileImages(profile.id, images);
+      if (profileError) throw profileError;
+      if (!profile) throw new Error('Profile creation failed, returned null.');
+
+      const profileId = profile.id;
+
+      // Generate the unique trigger phrase
+      const generatedTriggerPhrase = `upstyle_${profileId}`; // Example format
+
+      // Update the profile with the generated trigger phrase
+      const { error: updateError } = await supabase
+        .from('headshot_profiles')
+        .update({ trigger_phrase: generatedTriggerPhrase })
+        .eq('id', profileId);
+
+      if (updateError) {
+        // Optional: Attempt to clean up if update fails? Or just log error.
+        console.error('Failed to update profile with trigger phrase:', updateError);
+        throw updateError; // Re-throw to indicate overall failure
+      }
+
+      // Save images locally (associating with profileId)
+      const savedImages = await profileImageService.saveProfileImages(profileId, images);
       console.log('Saved images:', savedImages);
+      console.log(`Profile ${profileId} created with trigger: ${generatedTriggerPhrase}`);
 
       // Success handling
       setIsBottomSheetOpen(false);

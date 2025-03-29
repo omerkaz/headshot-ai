@@ -48,7 +48,7 @@ export default function () {
 
       // Success case
       setLoading(false);
-      router.replace('/(main)/(tabs)/home');
+      router.replace('/(main)/(tabs)/dashboard');
     } catch (error: any) {
       console.error('Login error:', error);
       setLoading(false);

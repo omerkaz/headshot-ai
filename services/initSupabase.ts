@@ -45,7 +45,7 @@ export const supabase = createClient(config.supabase.url, config.supabase.anonKe
     autoRefreshToken: true,
     storage: ExpoSecureStorage,
     flowType: 'pkce',
-    debug: true, // Enable debug mode temporarily
+    debug: false, // Enable debug mode temporarily
   },
   db: {
     schema: 'public',

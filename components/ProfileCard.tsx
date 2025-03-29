@@ -25,7 +25,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   onSubmit,
   onGenerate,
 }) => {
-  // Determine status color
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ready':
@@ -39,7 +38,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     }
   };
 
-  // Get human-readable status
   const getStatusText = (status: string) => {
     switch (status) {
       case 'ready':

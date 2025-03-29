@@ -5,11 +5,7 @@
     "version": "0.9.0",
     "owner": "omerkaz",
     "newArchEnabled": true,
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
     "icon": "./assets/images/logo-lg.png",
     "userInterfaceStyle": "automatic",
@@ -19,14 +15,17 @@
         "backgroundColor": "#101212"
       },
       "image": "./assets/images/logo-lg.png",
-      "resizeMode": "contain"
+      "resizeMode": "contain",
+      "imageWidth": 400,
+      "imageHeight": 400
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "omerkaz.headshotai",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "0.9.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -37,8 +36,6 @@
     "web": {
       "favicon": "./assets/images/logo-sm.png"
     },
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    }
+    "runtimeVersion": "0.9.0"
   }
 }

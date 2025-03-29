@@ -1,14 +1,13 @@
 import useColorScheme from '@/hooks/useColorScheme';
+import { supabase } from '@/services/initSupabase'; // Adjust path if needed
 import { colors } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
 import MaskedView from '@react-native-masked-view/masked-view';
+import { Session } from '@supabase/supabase-js';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
-
-const { width } = Dimensions.get('window');
-const TAB_WIDTH = (width - 40 * 2) / 2; // For 2 tabs
+import { Redirect, Tabs } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 // Define types for the TabIcon props
 type TabIconProps = {
@@ -53,8 +52,56 @@ const TabIcon: React.FC<TabIconProps> = ({ name, color, size, focused }) => {
   );
 };
 
-export default function TabLayout() {
+export default function TabsLayout() {
   const { isDark } = useColorScheme();
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 1. Check initial session state
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    // 2. Subscribe to auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      // No need to set loading false here, it was set after initial check
+      // If the user logs out (_event === 'SIGNED_OUT'), session becomes null
+      // and the component will re-render, triggering the Redirect below.
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  if (loading) {
+    // Show loading indicator while checking auth
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: colors.background,
+        }}>
+        <ActivityIndicator size="large" color={colors.text} />
+      </View>
+    );
+  }
+
+  if (!session) {
+    // User is not authenticated, redirect to login
+    // Using <Redirect> is recommended over router.push in layouts for initial auth redirects
+    return <Redirect href="/login" />;
+  }
+
+  // User is authenticated, render the child route (<Slot /> represents the matched child screen)
 
   return (
     <Tabs

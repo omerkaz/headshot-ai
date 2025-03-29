@@ -4,3 +4,6 @@ __DELELE_ME__
 .env
 .env.dev
 .cursorrules
+.DS_Store
+.vscode
+.expo
