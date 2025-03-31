@@ -39,6 +39,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'expo-router',
       'expo-asset',
       [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.944022490155-ergkv14r7tt585kvvjmg4d3b6sucagp7"
+        }
+      ],
+      [
         'expo-splash-screen',
         {
           backgroundColor: '#ffffff',

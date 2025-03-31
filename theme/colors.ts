@@ -6,11 +6,22 @@
 
 export const colors = {
   // Core theme colors
-  text: '#010309',
+  text: '#151f3d',  // Dark navy - from logo text
   background: '#f0f4fb',  // Lighter, more modern background
   accent1: '#fff8e1',  // Warmer, softer accent
-  accent2: '#7b95e0',  // Richer, more vibrant accent
-  accent3: '#ae8919',
+  accent2: '#0092c6',  // Mid-blue from logo
+  accent3: '#00d887',  // Mid-green from logo
+
+  // Brand colors from logo
+  brand: {
+    darkBlue: '#0062b1',  // Bottom of logo
+    midBlue: '#0092c6',   // Middle-bottom of logo
+    lightBlue: '#00bbd4', // Middle of logo
+    turquoise: '#00d8c6',  // Middle-top of logo
+    lightGreen: '#00d887', // Upper-middle of logo
+    green: '#40d848',      // Top of logo
+    darkText: '#151f3d',   // Logo text color
+  },
 
   // Common colors
   common: {
@@ -18,13 +29,15 @@ export const colors = {
     white: '#ffffff',
     transparent: 'transparent',
   },
+  
   // Status colors
   status: {
     error: '#ff3d69',
-    success: '#34a853', // More distinct success color
-    warning: '#fbbc05', // More vibrant warning color
-    info: '#4285f4',    // Added info color
+    success: '#00d887', // Using brand green
+    warning: '#fbbc05',
+    info: '#0092c6',    // Using brand blue
   },
+  
   grey: {
     50: '#fafafa',
     100: '#f5f5f5',
@@ -37,15 +50,17 @@ export const colors = {
     800: '#424242',
     900: '#212121',
   },
-  // Enhanced gradients with modern color combinations
+  
+  // Enhanced gradients matching the HeadshotAI logo
   gradients: {
-    primary: ['#6366f1', '#3b82f6'],  // Indigo to blue - professional, trustworthy
-    secondary: ['#8b5cf6', '#ec4899'], // Purple to pink - creative, energetic
-    accent: ['#f59e0b', '#ef4444'],    // Amber to red - warm, attention-grabbing
-    success: ['#10b981', '#059669'],   // Emerald gradient - fresh, positive
-    cool: ['#06b6d4', '#3b82f6'],      // Cyan to blue - calm, tech-focused
-    warm: ['#f97316', '#db2777'],      // Orange to pink - vibrant, friendly
-    elegant: ['#1e293b', '#334155']    // Slate gradients - sophisticated, premium
+    primary: ['#40d848', '#00d887', '#00d8c6', '#00bbd4', '#0092c6', '#0062b1'],  // Full logo gradient
+    header: ['#40d848', '#00bbd4'],  // Green to cyan - modern, tech
+    button: ['#0092c6', '#0062b1'],  // Blue gradient - professional, trustworthy
+    card: ['#00d887', '#00bbd4'],    // Green to cyan - fresh, innovative
+    success: ['#40d848', '#00d887'], // Green gradient - fresh, positive
+    cool: ['#00bbd4', '#0092c6'],    // Cyan to blue - calm, tech-focused
+    warm: ['#f97316', '#db2777'],    // Orange to pink - vibrant, friendly (non-logo colors for contrast)
+    dark: ['#151f3d', '#273456']     // Dark navy gradients - sophisticated, premium
   }
 };
 

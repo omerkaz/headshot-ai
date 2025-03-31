@@ -1,5 +1,6 @@
+import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, KeyboardAvoidingView, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Button, Layout, Text, TextInput, themeColor, useTheme } from 'react-native-rapi-ui';
 import { supabase } from '../../../services/initSupabase';
@@ -9,6 +10,13 @@ export default function () {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+      iosClientId: '944022490155-ergkv14r7tt585kvvjmg4d3b6sucagp7.apps.googleusercontent.com',
+    });
+  }, []);
 
   async function login() {
     setLoading(true);
@@ -60,6 +68,37 @@ export default function () {
       } else {
         alert(error.message || 'An error occurred during login');
       }
+    }
+  }
+
+  async function loginWithProvider(provider: 'google' | 'apple') {
+    setLoading(true);
+    try {
+      if (provider === 'google') {
+        await GoogleSignin.hasPlayServices();
+        const userInfo = await GoogleSignin.signIn();
+        if (userInfo.data?.idToken) {
+          const { data, error } = await supabase.auth.signInWithIdToken({
+            provider: 'google',
+            token: userInfo.data.idToken,
+          });
+          if (error) {
+            console.log('Google login error:', error);
+            alert(`Error during Google login: ${error.message}`);
+          } else {
+            console.log('Google login success:', data);
+            router.replace('/(main)/(tabs)/dashboard');
+          }
+        } else {
+          throw new Error('No ID token present!');
+        }
+      }
+      // Handle Apple sign-in similarly
+    } catch (error: any) {
+      console.error(`${provider} login error:`, error);
+      alert(`An error occurred during ${provider} login`);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -132,6 +171,24 @@ export default function () {
               }}
               style={{
                 marginTop: 20,
+              }}
+              color={themeColor.black}
+              disabled={loading}
+            />
+            <GoogleSigninButton
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Dark}
+              onPress={() => loginWithProvider('google')}
+              style={{
+                marginTop: 20,
+              }}
+              disabled={loading}
+            />
+            <Button
+              text={loading ? 'Loading' : 'Continue with Apple'}
+              onPress={() => loginWithProvider('apple')}
+              style={{
+                marginTop: 10,
               }}
               color={themeColor.black}
               disabled={loading}

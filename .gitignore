@@ -7,3 +7,7 @@ __DELELE_ME__
 .DS_Store
 .vscode
 .expo
+ios*
+ios
+android*
+android
