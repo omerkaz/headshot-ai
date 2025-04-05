@@ -2,9 +2,11 @@ import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import { profileImageService } from './profileImageLocalStorage';
 
-interface PreparedProfileResponse {
-  success: boolean;
-  error?: string;
+// Define the interface for the successful 202 response body
+interface PrepareProfileSuccessResponse {
+  success: true; // success is always true for a 202 response
+  message: string; // message is always present
+  requestId: string; // requestId is always present
 }
 
 const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: string, onProgress: (progress: number) => void) => {
@@ -47,7 +49,7 @@ const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: 
     console.log(`Calling backend API to prepare profile ${profileId} with ${images.length} images`);
     console.log('formData', formData);
     // Pass the FormData in the request, with appropriate headers
-    const response = await axios.post<PreparedProfileResponse>(
+    const response = await axios.post<PrepareProfileSuccessResponse>(
       `${API_URL}/api/headshot-profiles/create-weight`,
       formData,
       {
@@ -56,9 +58,9 @@ const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: 
         },
       }
     );
-    console.log('response', response);
-    if (response.status !== 200) {
-      throw new Error(`Failed to prepare profile: ${response.statusText}`);
+    console.log('response', response.data);
+    if (response.status !== 202) {
+      throw new Error(`Failed to prepare profile: ${response.data.message}`);
     }
     
     const result = response.data;
@@ -71,9 +73,28 @@ const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: 
     
     return result;
   } catch (error) {
-    console.error('Error in prepareProfileToLora:', error);
-    throw new Error(`Failed to prepare profile: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('Error preparing profile:', error);
+
+    let errorMessage = 'Unknown error during profile preparation';
+    if (axios.isAxiosError(error)) {
+        if (error.response) {
+            console.error('API Error Response:', error.response.data);
+            console.error('API Error Status:', error.response.status);
+            errorMessage = error.response.data?.error || `API Error: Status ${error.response.status}`;
+        } else if (error.request) {
+            console.error('Network Error:', error.request);
+            errorMessage = 'Network error: No response received from server.';
+        } else {
+            errorMessage = `Request setup error: ${error.message}`;
+        }
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    throw new Error(`Failed to prepare profile: ${errorMessage}`);
   }
 };
 
 export default prepareProfileToPrepareRequest;
+
+export type { PrepareProfileSuccessResponse };

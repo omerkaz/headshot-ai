@@ -102,7 +102,7 @@ export default function ProfileDetail() {
       const profileId = profile.id;
 
       // Generate the unique trigger phrase
-      const generatedTriggerPhrase = `upstyle_${profileId}`; // Example format
+      const generatedTriggerPhrase = `${profileId.slice(0, 8)}`; // Example format
 
       // Update the profile with the generated trigger phrase
       const { error: updateError } = await supabase
