@@ -224,10 +224,10 @@ const Dashboard = () => {
               <Text style={styles.emptyStateText}>
                 No{' '}
                 {activeTab === 'ready'
-                  ? 'ready'
+                  ? 'ready '
                   : activeTab === 'getting_ready'
-                    ? 'processing'
-                    : 'pending'}{' '}
+                    ? 'processing '
+                    : ''}
                 profiles
               </Text>
               <Text style={styles.emptyStateSubtext}>

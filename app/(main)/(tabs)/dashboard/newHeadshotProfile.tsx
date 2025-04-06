@@ -144,6 +144,7 @@ export default function ProfileDetail() {
       <ProgressBar imagesCount={images.length} onClearImages={() => setImages([])} />
 
       <NewProfileImageGrid
+        onAddImage={handleImagePick}
         images={images}
         onImageSelect={handleImageSelect}
         onImageRemove={handleImageRemove}
@@ -158,7 +159,7 @@ export default function ProfileDetail() {
             start={{ x: 1, y: 0 }}
             end={{ x: 1.8, y: 1 }}
             style={styles.gradientButton}>
-            <Ionicons name="add" size={32} color={colors.accent2} />
+            <Ionicons name="add" size={32} color={colors.common.white} />
           </LinearGradient>
         </TouchableOpacity>
       )}
