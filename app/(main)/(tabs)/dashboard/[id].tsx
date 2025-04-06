@@ -178,21 +178,21 @@ export default function ProfileDetail() {
       </View>
 
       <View style={styles.buttonContainer}>
-        {imagesOfProfile.length < 30 && (
+        {status === 'not_ready' && imagesOfProfile.length < 30 && (
           <TouchableOpacity
             style={[styles.addButton, imagesOfProfile.length >= 30 && styles.addButtonDisabled]}
             onPress={handleImagePick}>
             <LinearGradient
-              colors={[colors.accent1, colors.accent3]}
+              colors={[colors.text, colors.accent2]}
               start={{ x: 1, y: 0 }}
-              end={{ x: 1.8, y: 1 }}
+              end={{ x: 2, y: 0 }}
               style={styles.gradientButton}>
-              <Ionicons name="add" size={32} color={colors.accent2} />
+              <Ionicons name="add" size={32} color={colors.common.white} />
             </LinearGradient>
           </TouchableOpacity>
         )}
 
-        {status === 'not_ready' && imagesOfProfile.length >= 10 && (
+        {/* {status === 'not_ready' && imagesOfProfile.length >= 10 && (
           <TouchableOpacity
             style={styles.submitButton}
             onPress={handleSubmitForProcessing}
@@ -221,7 +221,7 @@ export default function ProfileDetail() {
               )}
             </LinearGradient>
           </TouchableOpacity>
-        )}
+        )} */}
       </View>
 
       <ImageModal visible={modalVisible} imageUri={selectedImage} onClose={handleModalClose} />

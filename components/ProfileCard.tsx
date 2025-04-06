@@ -54,7 +54,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   return (
     <Pressable
       style={styles.card}
-      onPress={() => onPress(profile.id, profile.status)}
+      onPress={() => {
+        if (profile.status !== 'getting_ready') {
+          onPress(profile.id, profile.status);
+        }
+      }}
       android_ripple={{ color: colors.grey[200], borderless: false }}>
       <View style={styles.cardContent}>
         {/* Status indicator */}
@@ -90,9 +94,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             <Text style={styles.cardTitle} numberOfLines={1}>
               {profile.name}
             </Text>
-            <Text style={styles.cardDate}>
-              {format(new Date(profile.created_at), 'MMM d, yyyy')}
-            </Text>
 
             {profile.total_images > 0 && (
               <View style={styles.imageCountContainer}>
@@ -100,6 +101,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                 <Text style={styles.imageCount}>{profile.total_images} images</Text>
               </View>
             )}
+            <Text style={styles.cardDate}>
+              {format(new Date(profile.created_at), 'MMM d, yyyy')}
+            </Text>
           </View>
         </View>
 
@@ -126,7 +130,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                     color={colors.common.white}
                     style={styles.submitButtonIcon}
                   />
-                  <Text style={styles.submitButtonText}>Process Images</Text>
+                  <Text style={styles.submitButtonText}>Submit for Training</Text>
                 </>
               )}
             </LinearGradient>
@@ -142,7 +146,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
               onGenerate(profile.id);
             }}>
             <LinearGradient
-              colors={['#10b981', '#059669']}
+              colors={['#00d887', '#00d887']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.generateGradient}>
@@ -169,7 +173,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    width: '48%',
+    width: '100%',
     backgroundColor: colors.common.white,
     borderRadius: 16,
     marginBottom: 16,
@@ -210,6 +214,9 @@ const styles = StyleSheet.create({
   },
   profileTextContainer: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   cardTitle: {
     fontSize: 16,
@@ -220,7 +227,6 @@ const styles = StyleSheet.create({
   cardDate: {
     fontSize: 12,
     color: colors.grey[500],
-    marginBottom: 4,
   },
   imageCountContainer: {
     flexDirection: 'row',

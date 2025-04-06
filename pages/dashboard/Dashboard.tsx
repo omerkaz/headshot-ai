@@ -201,13 +201,19 @@ const Dashboard = () => {
           <Pressable
             style={[styles.createCard]}
             onPress={createNewProfile}
-            android_ripple={{ color: colors.grey[200], borderless: false }}>
+            android_ripple={{ color: 'rgba(255,255,255,0.2)', borderless: false }}>
+            <LinearGradient
+              colors={[colors.text, colors.accent2]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 2, y: 0 }}
+              style={styles.createCardGradient}
+            />
             <View style={styles.cardContent}>
               <View style={styles.createIconContainer}>
                 <Ionicons name="add-circle" size={40} color={colors.text} />
               </View>
               <Text style={styles.createCardTitle}>Create New Profile</Text>
-              <Text style={styles.createCardSubtitle}>Start generating headshots</Text>
+              <Text style={styles.createCardSubtitle}>Upload photos to generate AI headshots</Text>
             </View>
           </Pressable>
 
@@ -271,64 +277,15 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     paddingBottom: 20,
   },
-  headerContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    letterSpacing: -0.5,
-  },
-  headerSubtitle: {
-    fontSize: 15,
-    color: colors.grey[600],
-    marginTop: 4,
-  },
   cardsContainer: {
     padding: 16,
   },
   profilesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  card: {
-    width: '48%',
-    backgroundColor: colors.common.white,
-    borderRadius: 12,
-    marginBottom: 16,
-    elevation: 4,
-    shadowColor: colors.common.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    overflow: 'hidden',
+    flexDirection: 'column',
   },
   cardContent: {
     padding: 16,
     alignItems: 'center',
-  },
-  statusIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    position: 'absolute',
-    top: 8,
-    right: 8,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginTop: 8,
-  },
-  cardStatus: {
-    fontSize: 14,
-    color: colors.text,
-    marginTop: 4,
   },
   centerContent: {
     justifyContent: 'center',
@@ -371,13 +328,12 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 16,
     borderRadius: 16,
-    backgroundColor: colors.accent1,
-    padding: 4,
-    elevation: 2,
+    overflow: 'hidden',
+    elevation: 3,
     shadowColor: colors.common.black,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
   },
   createIconContainer: {
     width: 70,
@@ -391,12 +347,12 @@ const styles = StyleSheet.create({
   createCardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.common.white,
     marginBottom: 4,
   },
   createCardSubtitle: {
     fontSize: 14,
-    color: colors.grey[600],
+    color: colors.common.white,
   },
   addImageIconContainer: {
     flexDirection: 'row',
@@ -491,28 +447,12 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: '700',
   },
-  submitProfileButton: {
-    marginTop: 12,
-    borderRadius: 16,
-    overflow: 'hidden',
-    width: '100%',
-    height: 36,
-  },
-  submitGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    paddingHorizontal: 12,
-  },
-  submitButtonText: {
-    color: colors.common.white,
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  submitButtonIcon: {
-    marginRight: 6,
+  createCardGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
 
