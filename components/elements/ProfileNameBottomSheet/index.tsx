@@ -71,7 +71,7 @@ export function ProfileNameBottomSheet({
           onPress={handleSave}
           disabled={!name.trim() || name.trim().length < 3 || name.trim().length > 50}>
           <LinearGradient
-            colors={[colors.accent1, colors.accent3]}
+            colors={[colors.text, colors.accent2]}
             start={{ x: 0, y: 0 }}
             end={{ x: 2, y: 0 }}
             style={styles.gradient}>

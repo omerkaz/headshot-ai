@@ -1,5 +1,6 @@
 import { colors } from '@/theme';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
   Image,
@@ -32,7 +33,15 @@ export function NewProfileImageGrid({
       showsVerticalScrollIndicator={false}>
       {images.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Ionicons name="images-outline" size={64} color={colors.accent1} />
+          <View style={styles.emptyIconContainer}>
+            <LinearGradient
+              colors={[colors.text, colors.accent2]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.emptyIcon}>
+              <Ionicons name="images-outline" size={64} color={colors.common.white} />
+            </LinearGradient>
+          </View>
           <Text style={styles.emptyText}>
             Add at least 10 photos of yourself to create a profile
           </Text>
@@ -151,5 +160,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 3,
+  },
+  emptyIconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
+  emptyIcon: {
+    opacity: 0.2,
+    width: '100%',
+    height: '100%',
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

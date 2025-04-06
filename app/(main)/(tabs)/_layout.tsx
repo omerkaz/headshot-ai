@@ -126,7 +126,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               name={focused ? 'grid' : 'grid-outline'}
-              size={32}
+              size={40}
               color={color}
               focused={focused}
             />
@@ -140,7 +140,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon
               name={focused ? 'person' : 'person-outline'}
-              size={32}
+              size={40}
               color={color}
               focused={focused}
             />
@@ -153,6 +153,7 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
+    paddingTop: 10,
     position: 'absolute',
     bottom: 0,
     left: 20,
@@ -170,12 +171,11 @@ const styles = StyleSheet.create({
     elevation: 8,
     borderTopWidth: 0,
     paddingBottom: 0,
+    paddingHorizontal: 30,
   },
   iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 40,
-    height: 40,
     marginTop: 7,
     borderRadius: 20,
   },

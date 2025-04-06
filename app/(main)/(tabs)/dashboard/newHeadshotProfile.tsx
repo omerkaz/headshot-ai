@@ -154,7 +154,7 @@ export default function ProfileDetail() {
           style={[styles.addButton, images.length >= 30 && styles.addButtonDisabled]}
           onPress={handleImagePick}>
           <LinearGradient
-            colors={[colors.accent1, colors.accent3]}
+            colors={[colors.text, colors.accent2]}
             start={{ x: 1, y: 0 }}
             end={{ x: 1.8, y: 1 }}
             style={styles.gradientButton}>
@@ -166,7 +166,7 @@ export default function ProfileDetail() {
       {images.length >= 10 && (
         <TouchableOpacity style={[styles.saveButton]} onPress={handleSavePress}>
           <LinearGradient
-            colors={[colors.accent1, colors.accent3]}
+            colors={[colors.text, colors.accent2]}
             start={{ x: 0, y: 0 }}
             end={{ x: 2, y: 0 }}
             style={styles.gradientButton}>
