@@ -290,8 +290,6 @@ const Dashboard = () => {
                   profile={profile}
                   deletingId={deletingId}
                   submittingId={submittingId}
-                  submissionProgress={submissionProgress}
-                  submissionSuccess={submissionSuccess}
                   onPress={navigateToProfile}
                   onDelete={handleDelete}
                   onSubmit={submitProfile}
