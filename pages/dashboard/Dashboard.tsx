@@ -1,6 +1,6 @@
+import ProgressModal from '@/components/elements/ProgressModal';
 import ProfileCard from '@/components/ProfileCard';
 import { supabase } from '@/services/initSupabase'; // Make sure you have this setup
-import prepareProfileToPrepareRequest from '@/services/prepareProfileToPrepareRequest';
 import { colors } from '@/theme/colors';
 import { HeadshotProfile } from '@/types/database.types';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,8 +26,11 @@ const Dashboard = () => {
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('not_ready');
-  const [submittingId, setSubmittingId] = useState<string | null>(null);
 
+  const [submittingId, setSubmittingId] = useState<string | null>(null);
+  const [submissionProgress, setSubmissionProgress] = useState<number>(0);
+  const [submissionSuccess, setSubmissionSuccess] = useState<boolean>(false);
+  console.log('submissionProgress', submissionProgress);
   useEffect(() => {
     // Fetch profiles immediately since we know user is authenticated
     fetchProfiles();
@@ -104,24 +107,63 @@ const Dashboard = () => {
   };
 
   const submitProfile = async (profileId: string, triggerPhrase: string) => {
+    let progressInterval: NodeJS.Timeout | null = null; // Store interval ID
     try {
-      setSubmittingId(profileId);
       console.log('triggerPhrase', triggerPhrase);
       console.log('profileId', profileId);
-      const preparedProfile = await prepareProfileToPrepareRequest(
-        profileId,
-        triggerPhrase,
-        (progress: number) => {
-          console.log('progress', progress);
-        }
-      );
-      console.log('preparedProfile', preparedProfile);
-      return;
+
+      setSubmittingId(profileId);
+      setSubmissionProgress(0); // Reset progress
+      setSubmissionSuccess(false); // Reset success state
+
+      // Start simulating progress
+      progressInterval = setInterval(() => {
+        // Update progress, ensuring it doesn't exceed 1
+        setSubmissionProgress(prevProgress => prevProgress + 0.05);
+      }, 1000); // Update progress every 300ms
+
+      console.log('Submitting profile:', profileId, 'with trigger:', triggerPhrase);
+      // const preparedProfile = await prepareProfileToPrepareRequest(
+      //   profileId,
+      //   triggerPhrase,
+      //   (progress: number) => {
+      //     console.log('progress', progress);
+      //   }
+      // );
+      // console.log('preparedProfile', preparedProfile);
+
+      // Mock asynchronous request with a delay
+      const preparedProfile = await new Promise<{ success: boolean }>(resolve => {
+        setTimeout(() => {
+          resolve({ success: true }); // Resolve the promise with 'true' after the delay
+        }, 4000); // Mock delay of 3 seconds
+      });
+
+      // If the request was successful (mocked as true here)
+      if (preparedProfile.success) {
+        setSubmissionProgress(1); // Ensure progress reaches 100% on success
+        setSubmissionSuccess(true);
+        // Keep success message visible for a few seconds
+        setTimeout(() => {
+          setSubmissionSuccess(false);
+          setSubmittingId(null);
+        }, 3000);
+        // Fetch profiles again to update status if needed
+        fetchProfiles(); // Re-fetch to show potential status changes
+      } else {
+        // Handle potential mock failure if you change resolve(true) to resolve(false)
+        throw new Error('Profile preparation result was not successful');
+      }
     } catch (err) {
       console.error('Error submitting profile:', err);
       Alert.alert('Error', 'Failed to submit profile for processing. Please try again.');
+      setSubmissionProgress(0); // Reset progress on error
     } finally {
-      setSubmittingId(null);
+      if (progressInterval) {
+        clearInterval(progressInterval); // Clear the interval
+      }
+      // Ensure submitting state is cleared
+      // Don't reset submissionSuccess here immediately, let the timeout handle it
     }
   };
 
@@ -173,14 +215,6 @@ const Dashboard = () => {
     </Pressable>
   );
 
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={colors.text} />
-      </View>
-    );
-  }
-
   if (error) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -224,7 +258,11 @@ const Dashboard = () => {
             <TabButton type="ready" label="Ready" />
           </View>
 
-          {filteredProfiles.length === 0 ? (
+          {loading ? (
+            <View style={[styles.container, styles.centerContent]}>
+              <ActivityIndicator size="large" color={colors.accent2} />
+            </View>
+          ) : filteredProfiles.length === 0 ? (
             <View style={styles.emptyState}>
               <Ionicons name="images-outline" size={60} color={colors.grey[400]} />
               <Text style={styles.emptyStateText}>
@@ -252,6 +290,8 @@ const Dashboard = () => {
                   profile={profile}
                   deletingId={deletingId}
                   submittingId={submittingId}
+                  submissionProgress={submissionProgress}
+                  submissionSuccess={submissionSuccess}
                   onPress={navigateToProfile}
                   onDelete={handleDelete}
                   onSubmit={submitProfile}
@@ -260,6 +300,13 @@ const Dashboard = () => {
               ))}
             </View>
           )}
+          <ProgressModal
+            submissionSuccess={submissionSuccess}
+            isVisible={submittingId !== null}
+            progress={submissionProgress}
+            title="Submitting Profile"
+            message={`Submitting profile for training...`}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -290,6 +337,8 @@ const styles = StyleSheet.create({
   centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 40,
+    marginTop: 20,
   },
   errorText: {
     color: colors.status.error,

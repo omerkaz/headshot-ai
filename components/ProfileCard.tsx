@@ -110,7 +110,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         {/* Action buttons based on status */}
         {profile.status === 'not_ready' && profile.total_images >= 10 && (
           <Pressable
-            style={styles.submitProfileButton}
+            style={[
+              styles.submitProfileButton,
+              submittingId === profile.id && styles.submitButtonDisabled,
+            ]}
+            disabled={submittingId === profile.id}
             onPress={e => {
               e.stopPropagation();
               onSubmit(profile.id, profile.trigger_phrase);
@@ -121,7 +125,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
               end={{ x: 1, y: 0 }}
               style={styles.submitGradient}>
               {submittingId === profile.id ? (
-                <ActivityIndicator size="small" color={colors.common.white} />
+                <Text style={styles.submitButtonText}>Processing...</Text>
               ) : (
                 <>
                   <Ionicons
@@ -248,6 +252,9 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 12,
   },
+  submitButtonDisabled: {
+    opacity: 0.7,
+  },
   submitGradient: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -255,6 +262,7 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: 10,
     paddingHorizontal: 12,
+    minHeight: 40,
   },
   submitButtonText: {
     color: colors.common.white,

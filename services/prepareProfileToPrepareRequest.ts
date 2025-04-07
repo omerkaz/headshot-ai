@@ -9,7 +9,7 @@ interface PrepareProfileSuccessResponse {
   requestId: string; // requestId is always present
 }
 
-const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: string, onProgress: (progress: number) => void) => {
+const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: string, onProgress?: (progress: number) => void) => {
   try {
     const formData = new FormData();
     formData.append('profileId', profileId);
@@ -40,7 +40,7 @@ const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: 
       formData.append('images', fileData as any);
       console.log(`Added image ${i + 1}: ${fileName}`);
       progress++;
-      onProgress(progress / images.length);
+      onProgress && onProgress(progress / images.length);
     }
 
     // Call the backend API to prepare the profile
