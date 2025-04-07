@@ -9,7 +9,7 @@ interface PrepareProfileSuccessResponse {
   requestId: string; // requestId is always present
 }
 
-const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: string, onProgress?: (progress: number) => void) => {
+const sendProfileToWeightTraining = async (profileId: string, triggerPhrase: string, onProgress?: (progress: number) => void) => {
   try {
     const formData = new FormData();
     formData.append('profileId', profileId);
@@ -95,6 +95,6 @@ const prepareProfileToPrepareRequest = async (profileId: string, triggerPhrase: 
   }
 };
 
-export default prepareProfileToPrepareRequest;
+export default sendProfileToWeightTraining;
 
 export type { PrepareProfileSuccessResponse };

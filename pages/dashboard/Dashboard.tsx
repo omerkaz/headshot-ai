@@ -1,6 +1,7 @@
 import ProgressModal from '@/components/elements/ProgressModal';
 import ProfileCard from '@/components/ProfileCard';
-import { supabase } from '@/services/initSupabase'; // Make sure you have this setup
+import { supabase } from '@/services/initSupabase';
+import sendProfileToWeightTraining from '@/services/sendProfileToWeightTraining';
 import { colors } from '@/theme/colors';
 import { HeadshotProfile } from '@/types/database.types';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,14 +31,10 @@ const Dashboard = () => {
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const [submissionProgress, setSubmissionProgress] = useState<number>(0);
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean>(false);
-  console.log('submissionProgress', submissionProgress);
+
   useEffect(() => {
-    // Fetch profiles immediately since we know user is authenticated
     fetchProfiles();
-    // You might want to re-fetch if something external changes,
-    // otherwise, fetching only once on mount might be sufficient.
-    // Consider adding dependencies if needed.
-  }, []); // Runs once when the component mounts
+  }, []);
 
   const fetchProfiles = async () => {
     setLoading(true); // Set loading true when starting fetch
@@ -123,47 +120,40 @@ const Dashboard = () => {
       }, 1000); // Update progress every 300ms
 
       console.log('Submitting profile:', profileId, 'with trigger:', triggerPhrase);
-      // const preparedProfile = await prepareProfileToPrepareRequest(
-      //   profileId,
-      //   triggerPhrase,
-      //   (progress: number) => {
-      //     console.log('progress', progress);
-      //   }
-      // );
-      // console.log('preparedProfile', preparedProfile);
 
-      // Mock asynchronous request with a delay
-      const preparedProfile = await new Promise<{ success: boolean }>(resolve => {
-        setTimeout(() => {
-          resolve({ success: true }); // Resolve the promise with 'true' after the delay
-        }, 4000); // Mock delay of 3 seconds
-      });
+      const preparedProfile = await sendProfileToWeightTraining(profileId, triggerPhrase);
+      console.log('preparedProfile', preparedProfile);
 
-      // If the request was successful (mocked as true here)
+      // // Mock asynchronous request with a delay
+      // const preparedProfile = await new Promise<{ success: boolean }>(resolve => {
+      //   setTimeout(() => {
+      //     resolve({ success: true }); // Resolve the promise with 'true' after the delay
+      //   }, 4000); // Mock delay of 3 seconds
+      // });
+
       if (preparedProfile.success) {
-        setSubmissionProgress(1); // Ensure progress reaches 100% on success
+        setSubmissionProgress(1);
         setSubmissionSuccess(true);
-        // Keep success message visible for a few seconds
+
         setTimeout(() => {
           setSubmissionSuccess(false);
           setSubmittingId(null);
         }, 3000);
-        // Fetch profiles again to update status if needed
-        fetchProfiles(); // Re-fetch to show potential status changes
+
+        fetchProfiles();
       } else {
-        // Handle potential mock failure if you change resolve(true) to resolve(false)
         throw new Error('Profile preparation result was not successful');
       }
     } catch (err) {
       console.error('Error submitting profile:', err);
       Alert.alert('Error', 'Failed to submit profile for processing. Please try again.');
       setSubmissionProgress(0); // Reset progress on error
+      setSubmittingId(null);
+      setSubmissionSuccess(false);
     } finally {
       if (progressInterval) {
         clearInterval(progressInterval); // Clear the interval
       }
-      // Ensure submitting state is cleared
-      // Don't reset submissionSuccess here immediately, let the timeout handle it
     }
   };
 
