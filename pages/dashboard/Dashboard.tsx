@@ -60,7 +60,7 @@ const Dashboard = () => {
   };
 
   const navigateToGenerateImage = (id: string) => {
-    router.push(`/dashboard/generateImage?profileId=${id}`);
+    router.push(`/dashboard/generate/${id}`);
   };
 
   const createNewProfile = () => {

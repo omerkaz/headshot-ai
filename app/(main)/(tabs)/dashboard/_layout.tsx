@@ -37,21 +37,14 @@ export default function DashboardLayout() {
           headerBackVisible: false,
           headerTintColor: colors.common.white,
           headerLeft: () => (
-            <Stack.Screen
-              options={{
-                headerLeft: () => (
-                  <Ionicons
-                    name="chevron-back"
-                    size={24}
-                    color={colors.common.white}
-                    style={{ marginLeft: 16 }}
-                    onPress={() => router.back()}
-                  />
-                ),
-              }}
+            <Ionicons
+              name="chevron-back"
+              size={24}
+              color={colors.common.white}
+              style={{ marginLeft: 16 }}
+              onPress={() => router.back()}
             />
           ),
-
           presentation: 'card',
         }}
       />
@@ -62,42 +55,30 @@ export default function DashboardLayout() {
           headerTitle: 'New Headshot Profile',
           headerTintColor: colors.common.white,
           headerLeft: () => (
-            <Stack.Screen
-              options={{
-                headerLeft: () => (
-                  <Ionicons
-                    name="chevron-back"
-                    size={24}
-                    color={colors.common.white}
-                    style={{ marginLeft: 16 }}
-                    onPress={() => router.back()}
-                  />
-                ),
-              }}
+            <Ionicons
+              name="chevron-back"
+              size={24}
+              color={colors.common.white}
+              style={{ marginLeft: 16 }}
+              onPress={() => router.back()}
             />
           ),
           presentation: 'card',
         }}
       />
       <Stack.Screen
-        name="[profileId]"
+        name="generate/[id]"
         options={{
           headerTitle: 'Generate Image',
           headerBackVisible: false,
           headerTintColor: colors.common.white,
           headerLeft: () => (
-            <Stack.Screen
-              options={{
-                headerLeft: () => (
-                  <Ionicons
-                    name="chevron-back"
-                    size={24}
-                    color={colors.common.white}
-                    style={{ marginLeft: 16 }}
-                    onPress={() => router.back()}
-                  />
-                ),
-              }}
+            <Ionicons
+              name="chevron-back"
+              size={24}
+              color={colors.common.white}
+              style={{ marginLeft: 16 }}
+              onPress={() => router.back()}
             />
           ),
           presentation: 'card',

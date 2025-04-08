@@ -14,7 +14,7 @@ export interface ProfileValues {
 
 export interface GenerateImageInput {
   profileValues: ProfileValues;
-  loraPath: string;
+  weightUrl: string;
 }
 
 export interface HeadshotProfile {
