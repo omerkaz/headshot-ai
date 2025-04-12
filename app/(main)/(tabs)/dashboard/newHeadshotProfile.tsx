@@ -88,9 +88,8 @@ export default function ProfileDetail() {
         .from('headshot_profiles')
         .insert({
           name: name,
-          status: 'not_ready', // Or 'training' if training starts immediately
+          status: 'not_ready',
           user_id: userId,
-          // trigger_phrase is initially null or omitted
           total_images: images.length,
         })
         .select()
@@ -101,8 +100,8 @@ export default function ProfileDetail() {
 
       const profileId = profile.id;
 
-      // Generate the unique trigger phrase
-      const generatedTriggerPhrase = `${profileId.slice(0, 8)}`; // Example format
+      // Generate the unique trigger phrase with the profile id beginning
+      const generatedTriggerPhrase = `${profileId.slice(0, 8)}`;
 
       // Update the profile with the generated trigger phrase
       const { error: updateError } = await supabase
