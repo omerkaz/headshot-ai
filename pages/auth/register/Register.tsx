@@ -1,36 +1,43 @@
 import { supabase } from '@/services/initSupabase';
-import { colors } from '@/theme/colors';
-import { LinearGradient } from 'expo-linear-gradient';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Image,
   KeyboardAvoidingView,
+  Platform,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
-export default function () {
-  const [isDarkmode, setIsDarkmode] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const toggleTheme = () => {
-    setIsDarkmode(!isDarkmode);
-  };
+export default function Register() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   async function register() {
+    if (password !== confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        data: {
+          name: name,
+        },
+      },
     });
+
     if (!error && !data.user) {
       setLoading(false);
       alert('Check your email for the login link!');
@@ -42,153 +49,232 @@ export default function () {
   }
 
   return (
-    <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
-      <LinearGradient
-        colors={[colors.text, colors.accent2]}
-        start={{ x: 0, y: 1.8 }}
-        end={{ x: 1.8, y: 1 }}
-        style={{ flex: 1 }}>
-        <View>
-          <ScrollView
-            contentContainerStyle={{
-              flexGrow: 1,
-            }}>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Image
-                resizeMode="contain"
-                style={{
-                  height: 220,
-                  width: 220,
-                }}
-                source={require('../../../assets/images/register.png')}
-              />
-            </View>
-            <View
-              style={{
-                flex: 3,
-                paddingHorizontal: 20,
-                paddingBottom: 20,
-                backgroundColor: isDarkmode ? '#17171E' : '#FFFFFF',
-              }}>
-              <Text
-                style={{
-                  alignSelf: 'center',
-                  padding: 30,
-                  fontSize: 24,
-                  fontWeight: 'bold',
-                }}>
-                Register
-              </Text>
-              <Text>Email</Text>
-              <TextInput
-                style={{
-                  marginTop: 15,
-                  borderWidth: 1,
-                  borderColor: '#CCCCCC',
-                  borderRadius: 5,
-                  padding: 10,
-                }}
-                placeholder="Enter your email"
-                value={email}
-                autoCapitalize="none"
-                autoComplete="off"
-                autoCorrect={false}
-                keyboardType="email-address"
-                onChangeText={text => setEmail(text)}
-              />
-
-              <Text style={{ marginTop: 15 }}>Password</Text>
-              <TextInput
-                style={{
-                  marginTop: 15,
-                  borderWidth: 1,
-                  borderColor: '#CCCCCC',
-                  borderRadius: 5,
-                  padding: 10,
-                }}
-                placeholder="Enter your password"
-                value={password}
-                autoCapitalize="none"
-                autoComplete="off"
-                autoCorrect={false}
-                secureTextEntry={true}
-                onChangeText={text => setPassword(text)}
-              />
-              <Pressable
-                onPress={register}
-                style={{
-                  marginTop: 20,
-                  backgroundColor: '#000000',
-                  padding: 15,
-                  borderRadius: 5,
-                  alignItems: 'center',
-                }}
-                disabled={loading}>
-                <Text style={{ color: '#FFFFFF' }}>
-                  {loading ? 'Loading' : 'Create an account'}
-                </Text>
-              </Pressable>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 15,
-                  justifyContent: 'center',
-                }}>
-                <Text style={{ fontSize: 16 }}>Already have an account?</Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    router.push('(auth)/login');
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                      marginLeft: 5,
-                    }}>
-                    Login here
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginTop: 30,
-                  justifyContent: 'center',
-                }}>
-                <TouchableOpacity onPress={toggleTheme}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                      marginLeft: 5,
-                    }}>
-                    {isDarkmode ? '☀️ light theme' : '🌑 dark theme'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ScrollView>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Create Your Account</Text>
+          <Text style={styles.subtitle}>
+            Your digital presence is your leverage. Transform it with AI.
+          </Text>
         </View>
-      </LinearGradient>
+
+        <View style={styles.form}>
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="John Doe"
+            value={name}
+            onChangeText={setName}
+            autoCapitalize="words"
+            autoCorrect={false}
+          />
+
+          <Text style={styles.label}>Email Address</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="johndoe02@gmail.com"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            autoComplete="email"
+            autoCorrect={false}
+            keyboardType="email-address"
+          />
+
+          <Text style={styles.label}>Password</Text>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="********"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              autoCapitalize="none"
+              autoComplete="off"
+              autoCorrect={false}
+            />
+            <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+              <Ionicons
+                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={24}
+                color="#666"
+              />
+            </Pressable>
+          </View>
+
+          <Text style={styles.label}>Confirm Password</Text>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="********"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showConfirmPassword}
+              autoCapitalize="none"
+              autoComplete="off"
+              autoCorrect={false}
+            />
+            <Pressable
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              style={styles.eyeIcon}>
+              <Ionicons
+                name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={24}
+                color="#666"
+              />
+            </Pressable>
+          </View>
+
+          <Pressable onPress={register} style={styles.signUpButton} disabled={loading}>
+            <Text style={styles.signUpButtonText}>{loading ? 'Loading...' : 'Sign Up'}</Text>
+          </Pressable>
+
+          <View style={styles.signInContainer}>
+            <Text style={styles.signInText}>Have an Account? </Text>
+            <Pressable onPress={() => router.push('(auth)/login')}>
+              <Text style={styles.signInLink}>Sign in</Text>
+            </Pressable>
+          </View>
+
+          <Pressable style={styles.googleButton}>
+            <View style={styles.googleButtonContent}>
+              <AntDesign name="google" size={24} color="#000" />
+              <Text style={styles.googleButtonText}>Sign up with Google</Text>
+            </View>
+          </Pressable>
+
+          <Pressable style={[styles.googleButton, styles.appleButton]}>
+            <View style={styles.googleButtonContent}>
+              <AntDesign name="apple1" size={24} color="#000" />
+              <Text style={styles.googleButtonText}>Sign up with Apple</Text>
+            </View>
+          </Pressable>
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  lightContainer: {
+  container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
   },
-  darkContainer: {
+  content: {
     flex: 1,
-    backgroundColor: '#17171E',
+    padding: 20,
+  },
+  header: {
+    marginTop: 60,
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    lineHeight: 24,
+  },
+  form: {
+    flex: 1,
+  },
+  label: {
+    fontSize: 16,
+    color: '#000',
+    marginBottom: 8,
+  },
+  input: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 16,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+  },
+  passwordInput: {
+    flex: 1,
+    height: 48,
+    paddingHorizontal: 16,
+    fontSize: 16,
+  },
+  eyeIcon: {
+    padding: 10,
+  },
+  signUpButton: {
+    height: 56,
+    backgroundColor: '#5FE3C4',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#000',
+    shadowColor: '#559E8D',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 2,
+    elevation: 5,
+  },
+  signUpButtonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  signInContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  signInText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  signInLink: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '600',
+  },
+  googleButton: {
+    height: 56,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  googleButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  googleButtonText: {
+    marginLeft: 12,
+    fontSize: 16,
+    color: '#000',
+  },
+  appleButton: {
+    marginTop: 0,
   },
 });
