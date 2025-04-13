@@ -3,24 +3,18 @@ import { typography } from '@/theme/typography';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  Image,
   KeyboardAvoidingView,
-  ScrollView,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
-export default function () {
-  const [isDarkmode, setIsDarkmode] = useState<boolean>(false);
+export default function ForgetPassword() {
   const [email, setEmail] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-
-  const toggleTheme = () => {
-    setIsDarkmode(!isDarkmode);
-  };
 
   async function forget() {
     setLoading(true);
@@ -36,147 +30,132 @@ export default function () {
   }
 
   return (
-    <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
-      <View style={isDarkmode ? styles.darkContainer : styles.lightContainer}>
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-          }}>
-          <View
-            style={[
-              styles.imageContainer,
-              { backgroundColor: isDarkmode ? '#17171E' : '#FFFFFF' },
-            ]}>
-            <Image
-              resizeMode="contain"
-              style={styles.image}
-              source={require('../../../assets/images/forget.png')}
-            />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Reset Password</Text>
+          <Text style={styles.subtitle}>
+            Enter your email address and we'll send you instructions to reset your password.
+          </Text>
+        </View>
+
+        <View style={styles.form}>
+          <Text style={styles.label}>Email Address</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="johndoe02@gmail.com"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            autoComplete="email"
+            autoCorrect={false}
+            keyboardType="email-address"
+          />
+
+          <Pressable onPress={forget} style={styles.resetButton} disabled={loading}>
+            <Text style={styles.resetButtonText}>
+              {loading ? 'Sending...' : 'Send Reset Instructions'}
+            </Text>
+          </Pressable>
+
+          <View style={styles.loginContainer}>
+            <Text style={styles.loginText}>Remember your password? </Text>
+            <Pressable onPress={() => router.push('(auth)/login')}>
+              <Text style={styles.loginLink}>Sign in</Text>
+            </Pressable>
           </View>
-          <View
-            style={[styles.formContainer, { backgroundColor: isDarkmode ? '#17171E' : '#FFFFFF' }]}>
-            <Text style={styles.title}>Forget Password</Text>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              value={email}
-              autoCapitalize="none"
-              autoComplete="off"
-              autoCorrect={false}
-              keyboardType="email-address"
-              onChangeText={text => setEmail(text)}
-            />
-            <TouchableOpacity onPress={forget} style={styles.button} disabled={loading}>
-              <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Send email'}</Text>
-            </TouchableOpacity>
-            <View style={styles.loginContainer}>
-              <Text style={styles.loginText}>Already have an account?</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  router.push('(auth)/login');
-                }}>
-                <Text style={styles.loginLink}>Login here</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.themeContainer}>
-              <TouchableOpacity onPress={toggleTheme}>
-                <Text style={styles.themeText}>
-                  {isDarkmode ? '☀️ light theme' : '🌑 dark theme'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  lightContainer: {
+  container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
   },
-  darkContainer: {
+  content: {
     flex: 1,
-    backgroundColor: '#17171E',
+    padding: 20,
   },
-  imageContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  image: {
-    height: 220,
-    width: 220,
-  },
-  formContainer: {
-    flex: 3,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+  header: {
+    marginTop: 60,
+    marginBottom: 30,
   },
   title: {
-    alignSelf: 'center',
-    padding: 30,
     fontSize: typography.sizes['2xl'],
     fontFamily: typography.fonts.bold,
-    color: '#000000',
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  subtitle: {
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.regular,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    lineHeight: 24,
+  },
+  form: {
+    flex: 1,
   },
   label: {
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.medium,
-    color: '#000000',
+    color: '#000',
     marginBottom: 8,
   },
   input: {
-    marginTop: 15,
+    height: 48,
     borderWidth: 1,
-    borderColor: '#CCCCCC',
-    borderRadius: 5,
-    padding: 10,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 16,
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.regular,
+    marginBottom: 16,
   },
-  button: {
-    marginTop: 20,
-    backgroundColor: '#000000',
-    padding: 15,
-    borderRadius: 5,
+  resetButton: {
+    height: 48,
+    backgroundColor: '#5FE3C4',
+    borderRadius: 8,
+    justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#000',
+    shadowColor: '#559E8D',
+    shadowRadius: 0,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 2,
+    elevation: 5,
   },
-  buttonText: {
-    color: '#FFFFFF',
+  resetButtonText: {
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.semiBold,
+    color: '#000',
   },
   loginContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 15,
     justifyContent: 'center',
+    marginTop: 16,
   },
   loginText: {
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.regular,
-    color: '#000000',
+    color: '#666',
   },
   loginLink: {
     fontSize: typography.sizes.base,
-    fontFamily: typography.fonts.bold,
-    marginLeft: 5,
-    color: '#000000',
-  },
-  themeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 30,
-    justifyContent: 'center',
-  },
-  themeText: {
-    fontSize: typography.sizes.base,
-    fontFamily: typography.fonts.bold,
-    marginLeft: 5,
-    color: '#000000',
+    fontFamily: typography.fonts.semiBold,
+    color: '#000',
   },
 });

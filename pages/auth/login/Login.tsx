@@ -1,29 +1,25 @@
 import { supabase } from '@/services/initSupabase';
 import { typography } from '@/theme/typography';
 import config from '@/utils/config';
-import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  Image,
   KeyboardAvoidingView,
-  ScrollView,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
-export default function () {
-  const [isDarkmode, setIsDarkmode] = useState<boolean>(false);
+export default function Login() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-
-  const toggleTheme = () => {
-    setIsDarkmode(!isDarkmode);
-  };
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -37,7 +33,6 @@ export default function () {
     try {
       console.log('Attempting login with:', { email });
 
-      // Attempt login
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
@@ -68,7 +63,6 @@ export default function () {
         return;
       }
 
-      // Success case
       setLoading(false);
       router.replace('/(main)/(tabs)/dashboard');
     } catch (error: any) {
@@ -107,7 +101,6 @@ export default function () {
           throw new Error('No ID token present!');
         }
       }
-      // Handle Apple sign-in similarly
     } catch (error: any) {
       console.error(`${provider} login error:`, error);
       alert(`An error occurred during ${provider} login`);
@@ -117,167 +110,235 @@ export default function () {
   }
 
   return (
-    <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
-      <View style={isDarkmode ? styles.darkContainer : styles.lightContainer}>
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-          }}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: isDarkmode ? '#17171E' : '#FFFFFF',
-            }}>
-            <Image
-              resizeMode="contain"
-              style={{
-                height: 220,
-                width: 220,
-              }}
-              source={require('../../../assets/images/login.png')}
-            />
-          </View>
-          <View
-            style={{
-              flex: 3,
-              paddingHorizontal: 20,
-              paddingBottom: 20,
-              backgroundColor: isDarkmode ? '#17171E' : '#FFFFFF',
-            }}>
-            <Text style={styles.headerText}>Login</Text>
-            <Text style={styles.labelText}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              value={email}
-              autoCapitalize="none"
-              autoComplete="off"
-              autoCorrect={false}
-              keyboardType="email-address"
-              onChangeText={text => setEmail(text)}
-            />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Welcome</Text>
+          <Text style={styles.subtitle}>
+            Ready to hit the state of the art? Log in to get started.
+          </Text>
+        </View>
 
-            <Text style={[styles.labelText, { marginTop: 15 }]}>Password</Text>
+        <View style={styles.form}>
+          <Text style={styles.label}>Email Address</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="johndoe02@gmail.com"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            autoComplete="email"
+            autoCorrect={false}
+            keyboardType="email-address"
+          />
+
+          <View style={styles.passwordHeader}>
+            <Text style={styles.label}>Password</Text>
+            <Pressable onPress={() => router.push('/forgetPassword')}>
+              <Text style={styles.forgotPasswordText}>Forgot Password</Text>
+            </Pressable>
+          </View>
+
+          <View style={styles.passwordContainer}>
             <TextInput
-              style={styles.input}
-              placeholder="Enter your password"
+              style={styles.passwordInput}
+              placeholder="********"
               value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
               autoCapitalize="none"
               autoComplete="off"
               autoCorrect={false}
-              secureTextEntry={true}
-              onChangeText={text => setPassword(text)}
             />
-            <TouchableOpacity onPress={login} style={styles.loginButton} disabled={loading}>
-              <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Login'}</Text>
-            </TouchableOpacity>
-
-            <View style={styles.forgotPasswordContainer}>
-              <TouchableOpacity
-                onPress={() => {
-                  router.push('/forgetPassword');
-                }}>
-                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>Don't have an account? </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  router.push('/register');
-                }}>
-                <Text style={styles.registerLink}>Register</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.socialButtonsContainer}>
-              <GoogleSigninButton
-                size={GoogleSigninButton.Size.Wide}
-                color={GoogleSigninButton.Color.Dark}
-                onPress={() => loginWithProvider('google')}
-                disabled={loading}
-                style={{ width: 192, height: 48 }}
+            <Pressable onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+              <Ionicons
+                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={24}
+                color="#666"
               />
-            </View>
+            </Pressable>
           </View>
-        </ScrollView>
+
+          <View style={styles.rememberMeContainer}>
+            <Pressable style={styles.checkbox}>{/* Add checkbox logic here */}</Pressable>
+            <Text style={styles.rememberMeText}>Keep me signed in</Text>
+          </View>
+
+          <Pressable onPress={login} style={styles.signInButton} disabled={loading}>
+            <Text style={styles.signInButtonText}>{loading ? 'Loading...' : 'Sign In'}</Text>
+          </Pressable>
+
+          <View style={styles.registerContainer}>
+            <Text style={styles.registerText}>Don't have an Account? </Text>
+            <Pressable onPress={() => router.push('/register')}>
+              <Text style={styles.registerLink}>Sign up</Text>
+            </Pressable>
+          </View>
+
+          <Pressable style={styles.googleButton} onPress={() => loginWithProvider('google')}>
+            <View style={styles.googleButtonContent}>
+              <AntDesign name="google" size={24} color="#000" />
+              <Text style={styles.googleButtonText}>Sign in with Google</Text>
+            </View>
+          </Pressable>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  darkContainer: {
+  container: {
     flex: 1,
-    backgroundColor: '#17171E',
+    backgroundColor: '#fff',
   },
-  lightContainer: {
+  content: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    padding: 20,
   },
-  headerText: {
-    alignSelf: 'center',
-    padding: 30,
+  header: {
+    marginTop: 60,
+    marginBottom: 30,
+  },
+  title: {
     fontSize: typography.sizes['2xl'],
     fontFamily: typography.fonts.bold,
-    color: '#000000',
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 12,
   },
-  labelText: {
+  subtitle: {
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.regular,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    lineHeight: 24,
+  },
+  form: {
+    flex: 1,
+  },
+  label: {
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.medium,
-    color: '#000000',
+    color: '#000',
+    marginBottom: 8,
   },
   input: {
-    marginTop: 15,
+    height: 48,
     borderWidth: 1,
-    borderColor: '#CCCCCC',
-    borderRadius: 5,
-    padding: 10,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: typography.sizes.base,
     fontFamily: typography.fonts.regular,
-    fontSize: typography.sizes.base,
+    marginBottom: 16,
   },
-  loginButton: {
-    marginTop: 20,
-    backgroundColor: '#000000',
-    padding: 15,
-    borderRadius: 5,
+  passwordHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: typography.sizes.base,
-    fontFamily: typography.fonts.semiBold,
-  },
-  forgotPasswordContainer: {
-    marginTop: 15,
-    alignItems: 'flex-end',
+    marginBottom: 8,
   },
   forgotPasswordText: {
-    fontSize: typography.sizes.sm,
+    fontSize: typography.sizes.base,
     fontFamily: typography.fonts.medium,
-    color: '#000000',
+    color: '#5FE3C4',
   },
-  registerContainer: {
-    marginTop: 20,
+  passwordContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  passwordInput: {
+    flex: 1,
+    height: 48,
+    paddingHorizontal: 16,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.regular,
+  },
+  eyeIcon: {
+    padding: 10,
+  },
+  rememberMeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 4,
+    marginRight: 8,
+  },
+  rememberMeText: {
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.regular,
+    color: '#666',
+  },
+  signInButton: {
+    height: 48,
+    backgroundColor: '#5FE3C4',
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#000',
+    shadowColor: '#559E8D',
+    shadowRadius: 0,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 2,
+    elevation: 5,
+  },
+  signInButtonText: {
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.semiBold,
+    color: '#000',
+  },
+  registerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
   },
   registerText: {
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.regular,
-    color: '#000000',
+    color: '#666',
   },
   registerLink: {
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.semiBold,
-    color: '#000000',
+    color: '#000',
   },
-  socialButtonsContainer: {
-    marginTop: 20,
+  googleButton: {
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginTop: 16,
+    justifyContent: 'center',
+  },
+  googleButtonContent: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  googleButtonText: {
+    marginLeft: 12,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.medium,
+    color: '#000',
   },
 });
