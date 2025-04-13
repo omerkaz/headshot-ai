@@ -1,19 +1,13 @@
 import useColorScheme from '@/hooks/useColorScheme';
 import { supabase } from '@/services/initSupabase';
 import { colors } from '@/theme';
+import { typography } from '@/theme/typography';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  Animated,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Animated, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 interface CreditHistory {
   id: string;
   action: string;
@@ -198,139 +192,111 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.common.white,
   },
   scrollContent: {
     flexGrow: 1,
   },
-  content: {
-    flex: 1,
-    backgroundColor: colors.background,
-    paddingTop: 16,
-  },
   creditsCard: {
-    marginHorizontal: 16,
-    marginVertical: 16,
-    borderRadius: 12,
+    margin: 16,
+    borderRadius: 16,
     overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: colors.accent2,
-    backgroundColor: colors.accent1,
   },
   creditsCardInner: {
-    padding: 25,
-    backgroundColor: colors.accent1,
-    borderRadius: 12,
+    padding: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    alignItems: 'center',
   },
   creditsTitle: {
-    fontSize: 18,
-    color: colors.grey[500],
-    marginBottom: 10,
-    fontWeight: '600',
-    letterSpacing: 0.3,
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.semiBold,
+    color: colors.grey[600],
+    marginBottom: 8,
   },
   creditsAmount: {
-    fontSize: 48,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 5,
-    letterSpacing: -1,
+    fontSize: typography.sizes['4xl'],
+    fontFamily: typography.fonts.bold,
+    color: colors.common.black,
+    marginBottom: 8,
   },
   creditsSubtext: {
-    fontSize: 14,
-    color: colors.grey[500],
-    letterSpacing: 0.2,
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.regular,
+    color: colors.grey[600],
+    textAlign: 'center',
+  },
+  content: {
+    flex: 1,
+    backgroundColor: colors.common.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 8,
   },
   section: {
-    marginHorizontal: 16,
-    marginVertical: 16,
+    marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 20,
-    letterSpacing: 0.3,
-  },
-  historyItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    backgroundColor: colors.common.white,
-    borderRadius: 15,
-    marginBottom: 12,
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.common.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
-  },
-  actionText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-    letterSpacing: 0.2,
-  },
-  dateText: {
-    fontSize: 14,
-    color: colors.grey[500],
-    letterSpacing: 0.1,
-  },
-  creditChange: {
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 0.2,
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.semiBold,
+    color: colors.grey[600],
+    marginHorizontal: 16,
+    marginBottom: 8,
   },
   settingsButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 18,
-    backgroundColor: colors.common.white,
-    borderRadius: 16,
-    marginBottom: 12,
-    ...Platform.select({
-      ios: {
-        shadowColor: colors.common.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+    backgroundColor: colors.grey[100],
+    marginHorizontal: 16,
+    marginBottom: 8,
+    padding: 16,
+    borderRadius: 12,
   },
   settingsIcon: {
     width: 40,
     height: 40,
-    borderRadius: 12,
-    backgroundColor: colors.accent1,
+    borderRadius: 20,
+    backgroundColor: colors.brand.midBlue,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 15,
+    marginRight: 16,
   },
   settingsText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    letterSpacing: 0.2,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.semiBold,
+    color: colors.common.black,
+    marginBottom: 4,
   },
   settingsSubtext: {
-    fontSize: 14,
-    color: colors.grey[500],
-    marginTop: 2,
-    letterSpacing: 0.1,
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.regular,
+    color: colors.grey[600],
   },
   logoutButton: {
-    marginTop: 20,
+    marginTop: 8,
+  },
+  historyItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.grey[100],
+    marginHorizontal: 16,
+    marginBottom: 8,
+    padding: 16,
+    borderRadius: 12,
+  },
+  actionText: {
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.medium,
+    color: colors.common.black,
+    marginBottom: 4,
+  },
+  dateText: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.regular,
+    color: colors.grey[600],
+  },
+  creditChange: {
+    fontSize: typography.sizes.lg,
+    fontFamily: typography.fonts.bold,
   },
 });

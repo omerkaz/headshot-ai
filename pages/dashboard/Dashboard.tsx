@@ -3,6 +3,7 @@ import ProfileCard from '@/components/ProfileCard';
 import { supabase } from '@/services/initSupabase';
 import sendProfileToWeightTraining from '@/services/sendProfileToWeightTraining';
 import { colors } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 import { HeadshotProfile } from '@/types/database.types';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -330,7 +331,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: colors.status.error,
-    fontSize: 16,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.medium,
     marginBottom: 16,
   },
   retryButton: {
@@ -340,8 +342,8 @@ const styles = StyleSheet.create({
   },
   retryText: {
     color: colors.common.white,
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.semiBold,
   },
   emptyState: {
     alignItems: 'center',
@@ -350,13 +352,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   emptyStateText: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: typography.sizes.lg,
+    fontFamily: typography.fonts.semiBold,
     color: colors.grey[700],
     marginTop: 16,
   },
   emptyStateSubtext: {
-    fontSize: 14,
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.regular,
     color: colors.grey[600],
     marginTop: 8,
     textAlign: 'center',
@@ -382,13 +385,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   createCardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: typography.sizes.xl,
+    fontFamily: typography.fonts.bold,
     color: colors.common.white,
     marginBottom: 4,
   },
   createCardSubtitle: {
-    fontSize: 14,
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.regular,
     color: colors.common.white,
   },
   addImageIconContainer: {
@@ -412,15 +416,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardDate: {
-    fontSize: 12,
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.regular,
     color: colors.grey[500],
     marginTop: 4,
   },
   imageCount: {
-    fontSize: 12,
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.medium,
     color: colors.grey[500],
     marginTop: 4,
-    fontWeight: '500',
   },
   deleteButton: {
     position: 'absolute',
@@ -473,8 +478,8 @@ const styles = StyleSheet.create({
     opacity: 0.12,
   },
   tabButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.semiBold,
     color: colors.grey[600],
   },
   tabButtonTextGettingReady: {
@@ -482,7 +487,7 @@ const styles = StyleSheet.create({
   },
   activeTabButtonText: {
     color: colors.text,
-    fontWeight: '700',
+    fontFamily: typography.fonts.bold,
   },
   createCardGradient: {
     position: 'absolute',

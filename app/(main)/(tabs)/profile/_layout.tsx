@@ -1,4 +1,3 @@
-import NavigationHeaderTitle from '@/components/layouts/NavigationHeaderTitle';
 import useColorScheme from '@/hooks/useColorScheme';
 import { Stack } from 'expo-router';
 
@@ -9,12 +8,7 @@ export default function ProfileStackLayout() {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen
-        name="index"
-        options={{
-          headerTitle: () => <NavigationHeaderTitle />,
-        }}
-      />
+      <Stack.Screen name="index" />
     </Stack>
   );
 }

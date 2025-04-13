@@ -61,19 +61,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           resizeMode: 'contain',
         },
       ],
-      [
-        'expo-font',
-        {
-          fonts: [
-            './assets/fonts/OpenSans-Bold.ttf',
-            './assets/fonts/OpenSans-BoldItalic.ttf',
-            './assets/fonts/OpenSans-Italic.ttf',
-            './assets/fonts/OpenSans-Regular.ttf',
-            './assets/fonts/OpenSans-Semibold.ttf',
-            './assets/fonts/OpenSans-SemiboldItalic.ttf',
-          ],
-        },
-      ],
     ],
   };
   // console.log('[##] expo config', expoConfig);

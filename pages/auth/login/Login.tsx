@@ -1,4 +1,5 @@
 import { supabase } from '@/services/initSupabase';
+import { typography } from '@/theme/typography';
 import config from '@/utils/config';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import { router } from 'expo-router';
@@ -6,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Image,
   KeyboardAvoidingView,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -146,24 +146,10 @@ export default function () {
               paddingBottom: 20,
               backgroundColor: isDarkmode ? '#17171E' : '#FFFFFF',
             }}>
-            <Text
-              style={{
-                alignSelf: 'center',
-                padding: 30,
-                fontSize: 24,
-                fontWeight: 'bold',
-              }}>
-              Login
-            </Text>
-            <Text>Email</Text>
+            <Text style={styles.headerText}>Login</Text>
+            <Text style={styles.labelText}>Email</Text>
             <TextInput
-              style={{
-                marginTop: 15,
-                borderWidth: 1,
-                borderColor: '#CCCCCC',
-                borderRadius: 5,
-                padding: 10,
-              }}
+              style={styles.input}
               placeholder="Enter your email"
               value={email}
               autoCapitalize="none"
@@ -173,15 +159,9 @@ export default function () {
               onChangeText={text => setEmail(text)}
             />
 
-            <Text style={{ marginTop: 15 }}>Password</Text>
+            <Text style={[styles.labelText, { marginTop: 15 }]}>Password</Text>
             <TextInput
-              style={{
-                marginTop: 15,
-                borderWidth: 1,
-                borderColor: '#CCCCCC',
-                borderRadius: 5,
-                padding: 10,
-              }}
+              style={styles.input}
               placeholder="Enter your password"
               value={password}
               autoCapitalize="none"
@@ -190,81 +170,37 @@ export default function () {
               secureTextEntry={true}
               onChangeText={text => setPassword(text)}
             />
-            <Pressable
-              onPress={login}
-              style={{
-                marginTop: 20,
-                backgroundColor: '#000000',
-                padding: 15,
-                borderRadius: 5,
-                alignItems: 'center',
-              }}
-              disabled={loading}>
-              <Text style={{ color: '#FFFFFF' }}>{loading ? 'Loading' : 'Continue'}</Text>
-            </Pressable>
-            <GoogleSigninButton
-              size={GoogleSigninButton.Size.Wide}
-              color={GoogleSigninButton.Color.Dark}
-              onPress={() => loginWithProvider('google')}
-              style={{
-                marginTop: 20,
-              }}
-              disabled={loading}
-            />
-            <Pressable
-              onPress={() => loginWithProvider('apple')}
-              style={{
-                marginTop: 10,
-                backgroundColor: '#000000',
-                padding: 15,
-                borderRadius: 5,
-                alignItems: 'center',
-              }}
-              disabled={loading}>
-              <Text style={{ color: '#FFFFFF' }}>Continue with Apple</Text>
-            </Pressable>
+            <TouchableOpacity onPress={login} style={styles.loginButton} disabled={loading}>
+              <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Login'}</Text>
+            </TouchableOpacity>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 15,
-                justifyContent: 'center',
-              }}>
-              <Text style={{ fontSize: 16 }}>Don't have an account?</Text>
+            <View style={styles.forgotPasswordContainer}>
               <TouchableOpacity
                 onPress={() => {
-                  router.push('(auth)/register');
+                  router.push('/forgetPassword');
                 }}>
-                <Text style={{ fontSize: 16 }}>Register here</Text>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 10,
-                justifyContent: 'center',
-              }}>
-              <TouchableOpacity onPress={() => {}}>
-                <Text style={{ fontSize: 16 }}>Forget password</Text>
+
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>Don't have an account? </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  router.push('/register');
+                }}>
+                <Text style={styles.registerLink}>Register</Text>
               </TouchableOpacity>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 30,
-                justifyContent: 'center',
-              }}>
-              <TouchableOpacity onPress={toggleTheme}>
-                <Text
-                  style={{
-                    marginLeft: 5,
-                  }}>
-                  {isDarkmode ? '☀️ light theme' : '🌑 dark theme'}
-                </Text>
-              </TouchableOpacity>
+
+            <View style={styles.socialButtonsContainer}>
+              <GoogleSigninButton
+                size={GoogleSigninButton.Size.Wide}
+                color={GoogleSigninButton.Color.Dark}
+                onPress={() => loginWithProvider('google')}
+                disabled={loading}
+                style={{ width: 192, height: 48 }}
+              />
             </View>
           </View>
         </ScrollView>
@@ -274,12 +210,74 @@ export default function () {
 }
 
 const styles = StyleSheet.create({
+  darkContainer: {
+    flex: 1,
+    backgroundColor: '#17171E',
+  },
   lightContainer: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  darkContainer: {
-    flex: 1,
-    backgroundColor: '#17171E',
+  headerText: {
+    alignSelf: 'center',
+    padding: 30,
+    fontSize: typography.sizes['2xl'],
+    fontFamily: typography.fonts.bold,
+    color: '#000000',
+  },
+  labelText: {
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.medium,
+    color: '#000000',
+  },
+  input: {
+    marginTop: 15,
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+    borderRadius: 5,
+    padding: 10,
+    fontFamily: typography.fonts.regular,
+    fontSize: typography.sizes.base,
+  },
+  loginButton: {
+    marginTop: 20,
+    backgroundColor: '#000000',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.semiBold,
+  },
+  forgotPasswordContainer: {
+    marginTop: 15,
+    alignItems: 'flex-end',
+  },
+  forgotPasswordText: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.medium,
+    color: '#000000',
+  },
+  registerContainer: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  registerText: {
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.regular,
+    color: '#000000',
+  },
+  registerLink: {
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.semiBold,
+    color: '#000000',
+  },
+  socialButtonsContainer: {
+    marginTop: 20,
+    alignItems: 'center',
   },
 });

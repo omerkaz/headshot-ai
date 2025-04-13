@@ -25,6 +25,7 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@expo-google-fonts/nunito": "^0.3.0",
     "@expo/vector-icons": "^14.0.4",
     "@fal-ai/client": "^1.2.3",
     "@gorhom/bottom-sheet": "^5",
@@ -45,7 +46,7 @@
     "expo-constants": "~17.0.3",
     "expo-dev-client": "~5.0.19",
     "expo-file-system": "~18.0.10",
-    "expo-font": "~13.0.2",
+    "expo-font": "~13.0.4",
     "expo-haptics": "~14.0.1",
     "expo-image": "~2.0.7",
     "expo-image-picker": "~16.0.6",

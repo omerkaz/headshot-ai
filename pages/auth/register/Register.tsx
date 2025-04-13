@@ -1,4 +1,5 @@
 import { supabase } from '@/services/initSupabase';
+import { typography } from '@/theme/typography';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -171,14 +172,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '600',
+    fontSize: typography.sizes['2xl'],
+    fontFamily: typography.fonts.bold,
     color: '#000',
     textAlign: 'center',
     marginBottom: 12,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.regular,
     color: '#666',
     textAlign: 'center',
     paddingHorizontal: 20,
@@ -188,7 +190,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    fontSize: 16,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.medium,
     color: '#000',
     marginBottom: 8,
   },
@@ -198,28 +201,30 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 16,
-    fontSize: 16,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.regular,
     marginBottom: 16,
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
+    marginBottom: 16,
   },
   passwordInput: {
     flex: 1,
     height: 48,
     paddingHorizontal: 16,
-    fontSize: 16,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.regular,
   },
   eyeIcon: {
     padding: 10,
   },
   signUpButton: {
-    height: 56,
+    height: 48,
     backgroundColor: '#5FE3C4',
     borderRadius: 8,
     justifyContent: 'center',
@@ -228,6 +233,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#000',
     shadowColor: '#559E8D',
+    shadowRadius: 0,
     shadowOffset: {
       width: 0,
       height: 3,
@@ -236,45 +242,46 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   signUpButtonText: {
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.semiBold,
     color: '#000',
-    fontSize: 16,
-    fontWeight: '600',
   },
   signInContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 16,
-    marginBottom: 24,
   },
   signInText: {
-    fontSize: 16,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.regular,
     color: '#666',
   },
   signInLink: {
-    fontSize: 16,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.semiBold,
     color: '#000',
-    fontWeight: '600',
   },
   googleButton: {
-    height: 56,
+    height: 48,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
+    marginTop: 16,
     justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
   },
   googleButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   googleButtonText: {
     marginLeft: 12,
-    fontSize: 16,
+    fontSize: typography.sizes.base,
+    fontFamily: typography.fonts.medium,
     color: '#000',
   },
   appleButton: {
-    marginTop: 0,
+    marginTop: 12,
   },
 });
