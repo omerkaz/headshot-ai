@@ -2,8 +2,9 @@ import { supabase } from '@/services/initSupabase';
 import { colors } from '@/theme/colors';
 import { GenerateImageInput, HeadshotProfile, ProfileValues } from '@/types/database.types';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -11,11 +12,20 @@ import {
   Pressable,
   SafeAreaView,
   ScrollView,
+  Share,
   StatusBar,
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
 } from 'react-native';
+import Animated, {
+  FadeIn,
+  SlideInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
 interface GenerationParams {
   prompt: string;
@@ -26,106 +36,137 @@ interface GenerationParams {
 
 export default function GenerateImage() {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
+  const { width } = useWindowDimensions();
   const [currentProfile, setCurrentProfile] = useState<HeadshotProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [historyImages, setHistoryImages] = useState<string[]>([]);
+  const previewScale = useSharedValue(1);
 
   useEffect(() => {
-    const loadProfileImages = async () => {
+    loadProfile();
+  }, [id]);
+
+  const loadProfile = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
       const { data, error } = await supabase
         .from('headshot_profiles')
         .select('*')
         .eq('id', id as string);
-      if (error) {
-        console.error('Error loading profile:', error);
-      } else {
-        console.log('Current Profile', data);
-        setCurrentProfile(data[0]);
-      }
-    };
-    loadProfileImages();
-    setIsLoading(false);
-  }, [id]);
+      if (error) throw error;
 
-  //   useEffect(() => {
-  //     const loadProfileImages = async () => {
-  //       const { data, error } = await supabase
-  //         .from('headshot_profiles_generated_images')
-  //         .select('*')
-  //         .eq('profile_id', profileId as string);
-  //       console.log('data', data);
-  //       if (error) {
-  //         console.error('Error loading profile:', error);
-  //       } else {
-  //         console.log('data', data);
-  //         setCurrentProfile(data[0]);
-  //       }
-  //     };
-  //     loadProfileImages();
-  //     setIsLoading(false);
-  //   }, [profileId]);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [params, setParams] = useState<GenerationParams>({
-    prompt: '',
-    negativePrompt: 'bad quality, blur, distortion',
-    size: '1:1',
-    style: 'realistic',
-  });
+      if (data && data.length > 0) {
+        setCurrentProfile(data[0]);
+      } else {
+        setError('Profile not found');
+      }
+    } catch (err) {
+      console.error('Error loading profile:', err);
+      setError('Failed to load profile');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleGenerate = async () => {
     try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setIsGenerating(true);
+      setError(null);
+
       if (!currentProfile) {
-        console.error('Current profile not found');
-        return;
+        throw new Error('Current profile not found');
       }
+
       const profileValues: ProfileValues = {
         triggerPhrase: currentProfile.trigger_phrase,
         profileId: currentProfile.id,
       };
+
       const generateImageInput: GenerateImageInput = {
         profileValues,
         weightUrl: currentProfile.weight_url!,
       };
-      console.log('generateImageInput', generateImageInput);
-
+      const token = await supabase.auth.getSession().then(res => res.data.session?.access_token);
+      console.log('token', token);
       const response = await fetch('http://localhost:3000/api/headshot-profiles/generate-image', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(generateImageInput),
       });
-
+      console.log('response', response);
       const data = await response.json();
+
       if (response.ok) {
-        console.log('data', data);
         setGeneratedImage(data.image_url);
+        if (data.image_url) {
+          setHistoryImages(prev => [data.image_url, ...prev]);
+        }
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       } else {
-        console.error('Error generating image:', data);
+        throw new Error(data.message || 'Error generating image');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      setError(error.message || 'Failed to generate image');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const sizeOptions: { label: string; value: GenerationParams['size'] }[] = [
-    { label: 'Square', value: '1:1' },
-    { label: 'Portrait', value: '3:4' },
-    { label: 'Landscape', value: '4:3' },
-    { label: 'Story', value: '9:16' },
-    { label: 'Wide', value: '16:9' },
-  ];
+  const handleSaveImage = async () => {
+    if (!generatedImage) return;
 
-  const styleOptions: { label: string; value: GenerationParams['style'] }[] = [
-    { label: 'Realistic', value: 'realistic' },
-    { label: 'Artistic', value: 'artistic' },
-    { label: 'Anime', value: 'anime' },
-    { label: 'Portrait', value: 'portrait' },
-  ];
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await Share.share({
+        url: generatedImage,
+        message: 'Check out my AI-generated headshot!',
+      });
+    } catch (error) {
+      console.error('Error sharing image:', error);
+    }
+  };
+
+  const handleImagePress = () => {
+    previewScale.value = withSpring(previewScale.value === 1 ? 1.05 : 1);
+  };
+
+  const animatedImageStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: previewScale.value }],
+    };
+  });
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.accent2} />
+        <Text style={styles.loadingText}>Loading profile...</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (error && !currentProfile) {
+    return (
+      <SafeAreaView style={styles.errorContainer}>
+        <Ionicons name="alert-circle" size={64} color={colors.status.error} />
+        <Text style={styles.errorTitle}>Error</Text>
+        <Text style={styles.errorMessage}>{error}</Text>
+        <Pressable
+          style={styles.tryAgainButton}
+          onPress={loadProfile}
+          android_ripple={{ color: 'rgba(0,0,0,0.1)' }}>
+          <Text style={styles.tryAgainText}>Try Again</Text>
+        </Pressable>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -137,54 +178,134 @@ export default function GenerateImage() {
         showsVerticalScrollIndicator={false}>
         {/* Profile Info */}
         {currentProfile && (
-          <View style={styles.profileInfoContainer}>
+          <Animated.View entering={FadeIn.duration(300)} style={styles.profileInfoContainer}>
             <View style={styles.profileIconContainer}>
-              <Ionicons name="person-circle-outline" size={36} color={colors.text} />
+              <LinearGradient
+                colors={['#6366f1', '#3b82f6']}
+                style={styles.profileIconGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}>
+                <Ionicons name="person" size={24} color={colors.common.white} />
+              </LinearGradient>
             </View>
-            <View>
+            <View style={styles.profileTextContainer}>
               <Text style={styles.profileName}>{currentProfile.name}</Text>
-              <Text style={styles.profileStatus}>Ready to generate</Text>
+              <View style={styles.statusBadge}>
+                <View style={styles.statusDot} />
+                <Text style={styles.profileStatus}>Ready to generate</Text>
+              </View>
             </View>
-          </View>
+          </Animated.View>
         )}
 
         {/* Image Preview */}
-        <View style={styles.previewContainer}>
+        <View style={[styles.previewContainer, { width: width - 32 }]}>
           {isGenerating ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.accent2} />
-              <Text style={styles.loadingText}>Generating your image...</Text>
+              <Text style={styles.loadingText}>Crafting your perfect headshot...</Text>
+              <Text style={styles.loadingSubtext}>This may take a moment</Text>
             </View>
           ) : generatedImage ? (
-            <Image source={{ uri: generatedImage }} style={styles.previewImage} />
+            <Pressable onPress={handleImagePress}>
+              <Animated.Image
+                source={{ uri: generatedImage }}
+                style={[styles.previewImage, animatedImageStyle]}
+                resizeMode="cover"
+              />
+            </Pressable>
           ) : (
             <View style={styles.placeholderContainer}>
               <Ionicons name="image-outline" size={64} color={colors.grey[300]} />
-              <Text style={styles.placeholderText}>Your image will appear here</Text>
+              <Text style={styles.placeholderText}>Your headshot will appear here</Text>
+              <Text style={styles.placeholderSubtext}>Press generate to create</Text>
             </View>
           )}
         </View>
+
+        {error && (
+          <Animated.View entering={SlideInDown.duration(300)} style={styles.errorBanner}>
+            <Ionicons name="warning-outline" size={20} color={colors.common.white} />
+            <Text style={styles.errorBannerText}>{error}</Text>
+          </Animated.View>
+        )}
+
+        {/* History */}
+        {historyImages.length > 0 && (
+          <View style={styles.historySection}>
+            <Text style={styles.historyTitle}>Generation History</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.historyList}>
+              {historyImages.map((img, index) => (
+                <Pressable
+                  key={index}
+                  style={styles.historyItem}
+                  onPress={() => setGeneratedImage(img)}>
+                  <Image source={{ uri: img }} style={styles.historyImage} />
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        )}
       </ScrollView>
 
       {/* Action Buttons */}
       <View style={styles.actionContainer}>
-        <Pressable
-          style={styles.generateButton}
-          onPress={handleGenerate}
-          disabled={isGenerating}
-          android_ripple={{ color: 'rgba(255,255,255,0.2)', borderless: false }}>
-          <LinearGradient
-            colors={['#6366f1', '#3b82f6']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.gradientBackground}>
-            {isGenerating ? (
-              <ActivityIndicator size="small" color={colors.common.white} />
-            ) : (
-              <Text style={styles.generateButtonText}>Generate Image</Text>
-            )}
-          </LinearGradient>
-        </Pressable>
+        {generatedImage ? (
+          <View style={styles.actionButtonsRow}>
+            <Pressable
+              style={[styles.actionButton, styles.secondaryButton]}
+              onPress={handleGenerate}
+              disabled={isGenerating}
+              android_ripple={{ color: 'rgba(0,0,0,0.1)' }}>
+              <Ionicons name="refresh" size={20} color={colors.accent2} />
+              <Text style={styles.secondaryButtonText}>New</Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.actionButton, styles.primaryButton]}
+              onPress={handleSaveImage}
+              disabled={isGenerating}
+              android_ripple={{ color: 'rgba(255,255,255,0.2)' }}>
+              <LinearGradient
+                colors={['#6366f1', '#3b82f6']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.gradientBackground}>
+                <Ionicons name="share-outline" size={20} color={colors.common.white} />
+                <Text style={styles.generateButtonText}>Share</Text>
+              </LinearGradient>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable
+            style={styles.generateButton}
+            onPress={handleGenerate}
+            disabled={isGenerating}
+            android_ripple={{ color: 'rgba(255,255,255,0.2)' }}>
+            <LinearGradient
+              colors={['#6366f1', '#3b82f6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.gradientBackground}>
+              {isGenerating ? (
+                <ActivityIndicator size="small" color={colors.common.white} />
+              ) : (
+                <>
+                  <Ionicons
+                    name="sparkles-outline"
+                    size={20}
+                    color={colors.common.white}
+                    style={styles.buttonIcon}
+                  />
+                  <Text style={styles.generateButtonText}>Generate Headshot</Text>
+                </>
+              )}
+            </LinearGradient>
+          </Pressable>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -194,23 +315,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: colors.common.white,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.grey[200],
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
   },
   content: {
     flex: 1,
@@ -224,38 +328,59 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.common.white,
     padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
+    borderRadius: 16,
+    marginBottom: 20,
     shadowColor: 'rgba(0,0,0,0.08)',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 3,
   },
   profileIconContainer: {
-    marginRight: 12,
+    marginRight: 16,
+  },
+  profileIconGradient: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileTextContainer: {
+    flex: 1,
   },
   profileName: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '700',
     color: colors.text,
+    marginBottom: 4,
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.status.success,
+    marginRight: 6,
   },
   profileStatus: {
     fontSize: 14,
     color: colors.status.success,
-    marginTop: 4,
   },
   previewContainer: {
     aspectRatio: 1,
     backgroundColor: colors.common.white,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
-    marginBottom: 16,
-    shadowColor: 'rgba(0,0,0,0.08)',
-    shadowOffset: { width: 0, height: 2 },
+    marginBottom: 20,
+    shadowColor: 'rgba(0,0,0,0.1)',
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowRadius: 12,
+    elevation: 4,
   },
   loadingContainer: {
     flex: 1,
@@ -265,8 +390,14 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 16,
-    color: colors.grey[600],
+    color: colors.grey[700],
     fontSize: 16,
+    fontWeight: '500',
+  },
+  loadingSubtext: {
+    marginTop: 8,
+    color: colors.grey[500],
+    fontSize: 14,
   },
   previewImage: {
     width: '100%',
@@ -282,25 +413,134 @@ const styles = StyleSheet.create({
     marginTop: 16,
     color: colors.grey[500],
     fontSize: 16,
+    fontWeight: '500',
+  },
+  placeholderSubtext: {
+    marginTop: 8,
+    color: colors.grey[400],
+    fontSize: 14,
   },
   actionContainer: {
     padding: 16,
+    marginBottom: 40,
     backgroundColor: colors.common.white,
     borderTopWidth: 1,
     borderTopColor: colors.grey[200],
   },
   generateButton: {
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
   },
   gradientBackground: {
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  buttonIcon: {
+    marginRight: 8,
   },
   generateButtonText: {
     color: colors.common.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  actionButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  actionButton: {
+    flex: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  primaryButton: {
+    flex: 2,
+  },
+  secondaryButton: {
+    flex: 1,
+    backgroundColor: colors.grey[100],
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  secondaryButtonText: {
+    color: colors.accent2,
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: colors.background,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginTop: 16,
+  },
+  errorMessage: {
+    fontSize: 16,
+    color: colors.grey[600],
+    textAlign: 'center',
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  tryAgainButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: colors.grey[200],
+    borderRadius: 8,
+  },
+  tryAgainText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  errorBanner: {
+    backgroundColor: colors.status.error,
+    padding: 12,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  errorBannerText: {
+    color: colors.common.white,
+    fontSize: 14,
+    marginLeft: 8,
+    flex: 1,
+  },
+  historySection: {
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  historyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 12,
+  },
+  historyList: {
+    paddingVertical: 4,
+  },
+  historyItem: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: colors.grey[200],
+  },
+  historyImage: {
+    width: '100%',
+    height: '100%',
   },
 });

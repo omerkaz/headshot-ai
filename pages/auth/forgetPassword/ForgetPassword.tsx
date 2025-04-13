@@ -1,13 +1,26 @@
+import { supabase } from '@/services/initSupabase';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, KeyboardAvoidingView, ScrollView, TouchableOpacity, View } from 'react-native';
-import { Button, Layout, Text, TextInput, themeColor, useTheme } from 'react-native-rapi-ui';
-import { supabase } from '../../../services/initSupabase';
+import {
+  Image,
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function () {
-  const { isDarkmode, setTheme } = useTheme();
+  const [isDarkmode, setIsDarkmode] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+
+  const toggleTheme = () => {
+    setIsDarkmode(!isDarkmode);
+  };
 
   async function forget() {
     setLoading(true);
@@ -21,9 +34,10 @@ export default function () {
       alert(error.message);
     }
   }
+
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
-      <Layout>
+      <View style={isDarkmode ? styles.darkContainer : styles.lightContainer}>
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -33,7 +47,7 @@ export default function () {
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: isDarkmode ? '#17171E' : themeColor.white100,
+              backgroundColor: isDarkmode ? '#17171E' : '#FFFFFF',
             }}>
             <Image
               resizeMode="contain"
@@ -49,20 +63,26 @@ export default function () {
               flex: 3,
               paddingHorizontal: 20,
               paddingBottom: 20,
-              backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+              backgroundColor: isDarkmode ? '#17171E' : '#FFFFFF',
             }}>
             <Text
-              size="h3"
-              fontWeight="bold"
               style={{
                 alignSelf: 'center',
                 padding: 30,
+                fontSize: 24,
+                fontWeight: 'bold',
               }}>
               Forget Password
             </Text>
             <Text>Email</Text>
             <TextInput
-              containerStyle={{ marginTop: 15 }}
+              style={{
+                marginTop: 15,
+                borderWidth: 1,
+                borderColor: '#CCCCCC',
+                borderRadius: 5,
+                padding: 10,
+              }}
               placeholder="Enter your email"
               value={email}
               autoCapitalize="none"
@@ -71,17 +91,18 @@ export default function () {
               keyboardType="email-address"
               onChangeText={text => setEmail(text)}
             />
-            <Button
-              text={loading ? 'Loading' : 'Send email'}
-              onPress={() => {
-                forget();
-              }}
+            <Pressable
+              onPress={forget}
               style={{
                 marginTop: 20,
+                backgroundColor: '#000000',
+                padding: 15,
+                borderRadius: 5,
+                alignItems: 'center',
               }}
-              disabled={loading}
-            />
-
+              disabled={loading}>
+              <Text style={{ color: '#FFFFFF' }}>{loading ? 'Loading' : 'Send email'}</Text>
+            </Pressable>
             <View
               style={{
                 flexDirection: 'row',
@@ -89,15 +110,15 @@ export default function () {
                 marginTop: 15,
                 justifyContent: 'center',
               }}>
-              <Text size="md">Already have an account?</Text>
+              <Text style={{ fontSize: 16 }}>Already have an account?</Text>
               <TouchableOpacity
                 onPress={() => {
                   router.push('(auth)/login');
                 }}>
                 <Text
-                  size="md"
-                  fontWeight="bold"
                   style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
                     marginLeft: 5,
                   }}>
                   Login here
@@ -111,14 +132,11 @@ export default function () {
                 marginTop: 30,
                 justifyContent: 'center',
               }}>
-              <TouchableOpacity
-                onPress={() => {
-                  isDarkmode ? setTheme('light') : setTheme('dark');
-                }}>
+              <TouchableOpacity onPress={toggleTheme}>
                 <Text
-                  size="md"
-                  fontWeight="bold"
                   style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
                     marginLeft: 5,
                   }}>
                   {isDarkmode ? '☀️ light theme' : '🌑 dark theme'}
@@ -127,7 +145,18 @@ export default function () {
             </View>
           </View>
         </ScrollView>
-      </Layout>
+      </View>
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  lightContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  darkContainer: {
+    flex: 1,
+    backgroundColor: '#17171E',
+  },
+});

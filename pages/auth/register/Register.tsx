@@ -1,14 +1,29 @@
+import { supabase } from '@/services/initSupabase';
+import { colors } from '@/theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, KeyboardAvoidingView, ScrollView, TouchableOpacity, View } from 'react-native';
-import { Button, Layout, Text, TextInput, themeColor, useTheme } from 'react-native-rapi-ui';
-import { supabase } from '../../../services/initSupabase';
+import {
+  Image,
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function () {
-  const { isDarkmode, setTheme } = useTheme();
+  const [isDarkmode, setIsDarkmode] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+
+  const toggleTheme = () => {
+    setIsDarkmode(!isDarkmode);
+  };
 
   async function register() {
     setLoading(true);
@@ -25,125 +40,155 @@ export default function () {
       alert(error.message);
     }
   }
+
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
-      <Layout>
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-          }}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: isDarkmode ? '#17171E' : themeColor.white100,
+      <LinearGradient
+        colors={[colors.text, colors.accent2]}
+        start={{ x: 0, y: 1.8 }}
+        end={{ x: 1.8, y: 1 }}
+        style={{ flex: 1 }}>
+        <View>
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
             }}>
-            <Image
-              resizeMode="contain"
-              style={{
-                height: 220,
-                width: 220,
-              }}
-              source={require('../../../assets/images/register.png')}
-            />
-          </View>
-          <View
-            style={{
-              flex: 3,
-              paddingHorizontal: 20,
-              paddingBottom: 20,
-              backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
-            }}>
-            <Text
-              fontWeight="bold"
-              size="h3"
-              style={{
-                alignSelf: 'center',
-                padding: 30,
-              }}>
-              Register
-            </Text>
-            <Text>Email</Text>
-            <TextInput
-              containerStyle={{ marginTop: 15 }}
-              placeholder="Enter your email"
-              value={email}
-              autoCapitalize="none"
-              autoComplete="off"
-              autoCorrect={false}
-              keyboardType="email-address"
-              onChangeText={text => setEmail(text)}
-            />
-
-            <Text style={{ marginTop: 15 }}>Password</Text>
-            <TextInput
-              containerStyle={{ marginTop: 15 }}
-              placeholder="Enter your password"
-              value={password}
-              autoCapitalize="none"
-              autoComplete="off"
-              autoCorrect={false}
-              secureTextEntry={true}
-              onChangeText={text => setPassword(text)}
-            />
-            <Button
-              text={loading ? 'Loading' : 'Create an account'}
-              onPress={() => {
-                register();
-              }}
-              style={{
-                marginTop: 20,
-              }}
-              disabled={loading}
-            />
-
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 15,
+                flex: 1,
                 justifyContent: 'center',
+                alignItems: 'center',
               }}>
-              <Text size="md">Already have an account?</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  router.push('(auth)/login');
-                }}>
-                <Text
-                  size="md"
-                  fontWeight="bold"
-                  style={{
-                    marginLeft: 5,
-                  }}>
-                  Login here
-                </Text>
-              </TouchableOpacity>
+              <Image
+                resizeMode="contain"
+                style={{
+                  height: 220,
+                  width: 220,
+                }}
+                source={require('../../../assets/images/register.png')}
+              />
             </View>
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginTop: 30,
-                justifyContent: 'center',
+                flex: 3,
+                paddingHorizontal: 20,
+                paddingBottom: 20,
+                backgroundColor: isDarkmode ? '#17171E' : '#FFFFFF',
               }}>
-              <TouchableOpacity
-                onPress={() => {
-                  isDarkmode ? setTheme('light') : setTheme('dark');
+              <Text
+                style={{
+                  alignSelf: 'center',
+                  padding: 30,
+                  fontSize: 24,
+                  fontWeight: 'bold',
                 }}>
-                <Text
-                  size="md"
-                  fontWeight="bold"
-                  style={{
-                    marginLeft: 5,
-                  }}>
-                  {isDarkmode ? '☀️ light theme' : '🌑 dark theme'}
+                Register
+              </Text>
+              <Text>Email</Text>
+              <TextInput
+                style={{
+                  marginTop: 15,
+                  borderWidth: 1,
+                  borderColor: '#CCCCCC',
+                  borderRadius: 5,
+                  padding: 10,
+                }}
+                placeholder="Enter your email"
+                value={email}
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                keyboardType="email-address"
+                onChangeText={text => setEmail(text)}
+              />
+
+              <Text style={{ marginTop: 15 }}>Password</Text>
+              <TextInput
+                style={{
+                  marginTop: 15,
+                  borderWidth: 1,
+                  borderColor: '#CCCCCC',
+                  borderRadius: 5,
+                  padding: 10,
+                }}
+                placeholder="Enter your password"
+                value={password}
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                secureTextEntry={true}
+                onChangeText={text => setPassword(text)}
+              />
+              <Pressable
+                onPress={register}
+                style={{
+                  marginTop: 20,
+                  backgroundColor: '#000000',
+                  padding: 15,
+                  borderRadius: 5,
+                  alignItems: 'center',
+                }}
+                disabled={loading}>
+                <Text style={{ color: '#FFFFFF' }}>
+                  {loading ? 'Loading' : 'Create an account'}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 15,
+                  justifyContent: 'center',
+                }}>
+                <Text style={{ fontSize: 16 }}>Already have an account?</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    router.push('(auth)/login');
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      marginLeft: 5,
+                    }}>
+                    Login here
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 30,
+                  justifyContent: 'center',
+                }}>
+                <TouchableOpacity onPress={toggleTheme}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      marginLeft: 5,
+                    }}>
+                    {isDarkmode ? '☀️ light theme' : '🌑 dark theme'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </Layout>
+          </ScrollView>
+        </View>
+      </LinearGradient>
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  lightContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  darkContainer: {
+    flex: 1,
+    backgroundColor: '#17171E',
+  },
+});
