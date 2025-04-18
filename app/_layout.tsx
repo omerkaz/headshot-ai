@@ -46,11 +46,13 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <QueryClientProvider client={queryClient}>
+        {/* <PurchasesProvider> */}
         <Stack
           screenOptions={{
             headerShown: false,
           }}
         />
+        {/* </PurchasesProvider> */}
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

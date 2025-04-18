@@ -1,7 +1,7 @@
-import { configureStore } from '@reduxjs/toolkit';
 import app from '@/slices/app.slice';
-import config from '@/utils/config';
 import { Env } from '@/types/env';
+import config from '@/utils/config';
+import { configureStore } from '@reduxjs/toolkit';
 import logger from 'redux-logger';
 
 const store = configureStore({

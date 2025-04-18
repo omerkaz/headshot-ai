@@ -1,10 +1,10 @@
-# AI Headshot Generator PRD
+# HeadshotAI PRD
 
-## 1. Problem Statement and Goals
+## Overview
 
-### Problem Statement
+### Project Description
 
-Users need a convenient mobile solution to create professional-looking headshots without expensive photography sessions. Current solutions are either too expensive, time-consuming, or don't produce consistent professional results.
+HeadshotAI is a mobile application that leverages artificial intelligence to transform casual selfies into professional headshots. The app aims to democratize access to professional photography by making it affordable, convenient, and accessible through modern mobile devices.
 
 ### Goals and Objectives
 
@@ -19,8 +19,36 @@ Users need a convenient mobile solution to create professional-looking headshots
 - Average processing time < 5 minutes per session
 - Image quality comparable to professional photography
 - Minimum 10 successful headshot generations per user
+- App store rating > 4.5 stars
+- User retention > 85% after first generation
 
-## 2. User Stories and Requirements
+## Market Analysis
+
+### Target Market
+
+- Professional job seekers
+- Remote workers
+- Social media professionals
+- Small business owners
+- Freelancers
+- Students entering workforce
+
+### Competitive Analysis
+
+- Traditional photography studios
+- Online AI photo editors
+- Mobile photo enhancement apps
+- Professional headshot services
+
+### Market Differentiators
+
+- AI-powered professional results
+- Mobile-first experience
+- Quick turnaround time
+- Cost-effective solution
+- Consistent quality output
+
+## User Requirements
 
 ### User Personas
 
@@ -28,58 +56,88 @@ Users need a convenient mobile solution to create professional-looking headshots
 
    - Need: Professional headshots for LinkedIn/resumes
    - Pain point: Traditional photography is expensive
+   - Goals: Quick, affordable, professional results
 
 2. **Remote Workers**
 
    - Need: Professional profile pictures for work platforms
    - Pain point: Can't visit photography studios easily
+   - Goals: Convenient, high-quality headshots
 
 3. **Social Media Professionals**
-
    - Need: Consistent, professional-looking profile images
    - Pain point: Frequent need for fresh content
+   - Goals: Variety of professional looks
 
-### Functional Requirements
+### User Stories
 
-#### Image Acquisition
+```typescript
+interface UserStory {
+  as_a: string;
+  i_want_to: string;
+  so_that: string;
+  acceptance_criteria: string[];
+}
 
-- Upload minimum 10 images from device gallery/camera
-- Image quality validation
-- Face detection and validation
-- Progress tracking for uploads
+const userStories: UserStory[] = [
+  {
+    as_a: 'job seeker',
+    i_want_to: 'quickly generate professional headshots',
+    so_that: 'I can enhance my job applications',
+    acceptance_criteria: [
+      'Upload multiple selfies',
+      'Choose from different styles',
+      'Download high-resolution images',
+      'Share directly to LinkedIn',
+    ],
+  },
+  // Additional stories...
+];
+```
 
-#### AI Processing
-
-- Integration with fal.ai API
-- Prepare request body-prompt, trigger phrase etc.-
-- Request to the fal.ai API
-- Professional headshot generation
-
-#### User Interface
-
-- Intuitive image upload process
-- Real-time progress indicators
-- Preview capabilities
-- Gallery management
-
-### Non-Functional Requirements
-
-- Response time < 2s for image uploads
-- AI processing feedback every 10% of progress
-- Secure storage of user images
-- GDPR compliance
-- Offline capability for uploaded images
-
-## 3. Technical Specifications
+## Technical Requirements
 
 ### System Architecture
 
-- React Native mobile application with Expo managed workflow
+- React Native mobile application with Expo SDK 52
+- Expo Router v4 for navigation
 - Supabase for authentication and data storage
 - fal.ai API integration for AI processing
+- Redux Toolkit for state management
+- React Query for data fetching and caching
 - Expo ImagePicker for image acquisition
-- Local storage for image caching
-- Cloud storage for processed images
+- React Native Purchases for in-app purchases
+- Local storage with AsyncStorage
+- Cloud storage with Supabase Storage
+
+### Development Stack
+
+```json
+{
+  "frontend": {
+    "framework": "React Native 0.76.9",
+    "expo": "52.0.41",
+    "navigation": "expo-router 4.0",
+    "state_management": ["@reduxjs/toolkit", "@tanstack/react-query"],
+    "ui_components": ["react-native-rapi-ui", "@gorhom/bottom-sheet", "expo-blur"],
+    "styling": ["react-native-reanimated", "expo-linear-gradient"]
+  },
+  "backend": {
+    "database": "Supabase",
+    "storage": "Supabase Storage",
+    "ai_processing": "fal.ai",
+    "authentication": ["Supabase Auth", "Google Sign-In"]
+  },
+  "testing": {
+    "framework": "Jest",
+    "tools": ["@testing-library/react-native"]
+  },
+  "deployment": {
+    "mobile": "EAS Build",
+    "web": "EAS Deploy"
+  }
+}
+```
 
 ### API Specifications
 
@@ -172,72 +230,105 @@ interface GeneratedHeadshot {
 
 - JWT-based authentication using Supabase
 - Secure image storage using Supabase Storage
+- Environment variable management with @dotenvx/dotenvx
 - Environment-based API key management for fal.ai
 - Row Level Security (RLS) policies for database access
 - GDPR-compliant data handling
 - Secure file upload validation
 - Rate limiting for API requests
 - Regular security audits and updates
+- Expo security best practices implementation
+- Secure in-app purchases with RevenueCat
 
-## 4. Design Guidelines
+## Design Requirements
 
-### UI Components
+### UI/UX Guidelines
 
-- Image upload area
-- Progress indicators
-- Preview gallery
-- Action buttons
-- Status messages
+- Material Design 3 principles
+- Native platform conventions
+- Consistent branding
+- Intuitive workflow
+- Responsive layouts
+- Dark/light mode support
 
 ### Design System
 
 - Primary color: #0e6669 (Teal)
 - Secondary color: #cb0c47 (Red)
 - Text color: #f2f1f0 (Off-white)
-- System fonts
+- Nunito font family (@expo-google-fonts/nunito)
 - Consistent padding (16px)
 - Rounded corners (8px)
+- Linear gradients for visual appeal
+- Expo Symbols for iconography
+- Dark mode support
 
-### Accessibility
+### User Interface Components
+
+- Bottom sheet for interactive modals
+- Blur effects for visual hierarchy
+- Progress indicators with Reanimated
+- Image preview gallery
+- Action buttons with haptic feedback
+- Status messages with toast notifications
+- Custom navigation components
+- Responsive layouts
+
+### Accessibility Standards
 
 - Clear contrast ratios
 - Screen reader support
 - Touch targets > 44px
 - Loading states
 - Error handling
+- Haptic feedback
+- Dynamic text sizing
+- RTL support
 
-## 5. Timeline and Milestones
+## Implementation Plan
 
-### Phase 1: Core Development (4 weeks)
+### Phase 1: Foundation (Week 1-2)
 
-- [x] Project setup
+- [x] Project setup and configuration
 - [x] Authentication system implementation
 - [x] Basic UI implementation
-- [ ] Image upload implementation
-- [ ] fal.ai API integration
+- [ ] Image upload and validation
+- [ ] Storage integration
 
-### Phase 2: AI Integration (3 weeks)
+### Phase 2: Core Features (Week 3-4)
 
-- [ ] Training pipeline
-- [ ] Weight file management
-- [ ] Headshot generation
+- [ ] AI integration with fal.ai
+- [ ] Image processing pipeline
+- [ ] Gallery management
+- [ ] Basic style generation
 - [ ] Progress tracking
 
-### Phase 3: Polish (2 weeks)
+### Phase 3: Enhancement (Week 5-6)
+
+- [ ] Advanced style customization
+- [ ] Batch processing
+- [ ] Social sharing
+- [ ] In-app purchases
+- [ ] Performance optimization
+
+### Phase 4: Polish (Week 7-8)
 
 - [ ] UI/UX refinement
-- [ ] Performance optimization
 - [ ] Error handling
-- [ ] Testing and bug fixes
-
-### Phase 4: Launch (1 week)
-
-- [ ] Final testing
-- [ ] App store submission
+- [ ] Analytics integration
 - [ ] Documentation
-- [ ] Marketing materials
+- [ ] Testing and QA
 
-## 6. Success Metrics
+## Quality Assurance
+
+### Testing Strategy
+
+- Unit testing with Jest
+- Integration testing
+- E2E testing with Testing Library
+- Performance testing
+- Security testing
+- Accessibility testing
 
 ### Performance Metrics
 
@@ -259,62 +350,89 @@ interface GeneratedHeadshot {
 - App crash rate < 0.1%
 - Error recovery rate > 95%
 
-### Business Metrics
-
-- User retention > 85% after first generation
-- Average session duration > 5 minutes
-- Completed profile rate > 75%
-- Average images per session > 8
-- User feedback score > 4.5/5
-- Feature adoption rate > 80%
-- Daily active users growth > 10% week-over-week
-
-### Monitoring Metrics
-
-- API endpoint availability > 99.9%
-- Storage usage per user < 100MB
-- Average API latency < 200ms
-- Error rate per endpoint < 1%
-- Authentication token refresh success > 99%
-- Background job completion rate > 98%
-- Cache hit rate > 80%
-
-## 7. Risk Mitigation
+## Risk Management
 
 ### Technical Risks
 
-- API availability (fal.ai and Supabase)
+- AI model reliability
 - Processing time variations
-- Image quality issues
 - Storage limitations
-- Network connectivity issues
-- Session management
-- Rate limiting exceeded
+- API availability
+- Network connectivity
 
 ### Mitigation Strategies
 
-- Implement offline capability for image upload queue
-- Progress caching with local storage
-- Client-side image quality validation
-- Cloud storage with Supabase
-- Automatic retry mechanism for failed requests
-- Graceful degradation for slow connections
-- Clear error messaging for users
-- Regular monitoring and alerting
+- Fallback processing options
+- Caching mechanisms
+- Offline capabilities
+- Error recovery
+- Regular monitoring
 
-## 8. Future Considerations
+## Success Metrics
 
-### Potential Enhancements
+### Key Performance Indicators (KPIs)
+
+- User acquisition rate
+- Retention rate
+- Generation success rate
+- Average session duration
+- Revenue per user
+
+### Business Impact Metrics
+
+- Monthly recurring revenue
+- Customer acquisition cost
+- Customer lifetime value
+- Net promoter score
+- Market share
+
+## Future Roadmap
+
+### Short-term (3 months)
 
 - Additional AI models
-- Batch processing
-- Style customization
-- Social sharing
-- Professional templates
+- Advanced customization
+- Social integration
+- Analytics dashboard
+- Performance optimization
 
-### Scalability
+### Long-term (6-12 months)
 
-- Cloud infrastructure
-- Processing optimization
-- Storage solutions
-- User management
+- API marketplace
+- Enterprise features
+- White-label solution
+- International expansion
+- AI model training
+
+## Maintenance and Support
+
+### Regular Updates
+
+- Weekly bug fixes
+- Monthly feature updates
+- Quarterly security audits
+- Annual major releases
+
+### Support Channels
+
+- In-app support
+- Email support
+- Documentation
+- Community forum
+- Social media
+
+## Version History
+
+### Current Version: 0.9.0
+
+- Initial beta release
+- Core functionality
+- Basic AI integration
+- iOS platform support
+
+### Planned Versions
+
+- 1.0.0: Public release
+- 1.1.0: Android support
+- 1.2.0: Advanced features
+- 2.0.0: Enterprise features

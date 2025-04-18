@@ -12,6 +12,8 @@ export const colors = {
   accent2: '#0092c6',  // Mid-blue from logo
   accent3: '#00d887',  // Mid-green from logo
 
+  primary: '#151f3d',  // Darker, more saturated primary color 
+  secondary: '#0092c6',  // Mid-blue from logo - for secondary elements
   // Brand colors from logo
   brand: {
     darkBlue: '#0062b1',  // Bottom of logo

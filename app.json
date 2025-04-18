@@ -21,7 +21,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "omerkaz.headshotai",
+      "bundleIdentifier": "com.withouteffort.headshotai",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
