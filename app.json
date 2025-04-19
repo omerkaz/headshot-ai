@@ -5,7 +5,7 @@
     "version": "0.9.0",
     "owner": "omerkaz",
     "newArchEnabled": true,
-    "platforms": ["ios"],
+    "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
     "icon": "./assets/images/logo-lg.png",
     "userInterfaceStyle": "automatic",

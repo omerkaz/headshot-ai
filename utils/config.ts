@@ -21,6 +21,10 @@ if (!extra?.EXPO_PUBLIC_BACKEND_API_URL) {
   throw new Error('Missing BACKEND_API_URL in environment config');
 }
 
+if (!extra?.EXPO_PUBLIC_REVENUECAT_API_KEY) {
+  throw new Error('Missing REVENUECAT_API_KEY in environment config');
+} 
+
 const config = {
   env: extra.env as Env,
   apiUrl: extra.EXPO_PUBLIC_BACKEND_API_URL as string,
@@ -31,6 +35,9 @@ const config = {
   google: {
     iosClientId: extra.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID as string,
   },
+  revenuecat: {
+    apiKey: extra.EXPO_PUBLIC_REVENUECAT_API_KEY as string,
+  },  
 } as const;
 
 export default config;

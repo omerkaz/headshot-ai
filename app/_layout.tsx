@@ -1,4 +1,5 @@
 import { queryClient } from '@/services/queryClient';
+import config from '@/utils/config';
 import {
   Nunito_200ExtraLight,
   Nunito_300Light,
@@ -12,12 +13,27 @@ import {
 } from '@expo-google-fonts/nunito';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { SplashScreen, Stack } from 'expo-router';
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+// Initialize RevenueCat outside of the component
+const initializeRevenueCat = () => {
+  Purchases.setLogLevel('VERBOSE' as LOG_LEVEL);
+
+  if (Platform.OS === 'ios') {
+    Purchases.configure({ apiKey: config.revenuecat.apiKey });
+  } else if (Platform.OS === 'android') {
+    //  Purchases.configure({apiKey: <revenuecat_project_google_api_key>});
+    // // OR: if building for Amazon, be sure to follow the installation instructions then:
+    //  Purchases.configure({ apiKey: <revenuecat_project_amazon_api_key>, useAmazon: true });
+    console.log('ANDROID');
+  }
+};
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -31,7 +47,12 @@ export default function RootLayout() {
     NunitoBlack: Nunito_900Black,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
+    // Initialize RevenueCat only once when the component mounts
+    initializeRevenueCat();
+  }, []);
+
+  useEffect(() => {
     if (fontsLoaded || fontError) {
       // Hide splash screen once fonts are loaded or if there's an error
       SplashScreen.hideAsync();
@@ -46,13 +67,11 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <QueryClientProvider client={queryClient}>
-        {/* <PurchasesProvider> */}
         <Stack
           screenOptions={{
             headerShown: false,
           }}
         />
-        {/* </PurchasesProvider> */}
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
